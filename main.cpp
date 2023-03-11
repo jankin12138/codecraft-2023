@@ -1,5 +1,5 @@
 #include <iostream>
-#include "bits/stdc++.h"
+#include <bits/stdc++.h>
 
 using namespace std;
 
@@ -67,14 +67,14 @@ public:
 };
 
 // 子函数：处理char型数组，按照空格切割并翻译为浮点数
-void parse_char(char * line,float * temp_arr){
+void parse_char(char *line, float *temp_arr) {
     char delims[] = " ";
     char *temp = NULL;
-    temp = strtok( line, delims );
+    temp = strtok(line, delims);
     int i = 0;
-    while( temp != NULL ) {
-        temp_arr[i]  = atof(temp);
-        temp = strtok( NULL, delims );
+    while (temp != NULL) {
+        temp_arr[i] = atof(temp);
+        temp = strtok(NULL, delims);
         i++;
     }
 }
@@ -115,8 +115,6 @@ Map init_map(FILE *file) {
 }
 
 
-
-
 // 从每一帧刷新数据：从本地文件初始化Map,提交代码需要从stdin初始化
 void flush_map(FILE *file, Map *map) {
     map->frame = 0;
@@ -129,37 +127,36 @@ void flush_map(FILE *file, Map *map) {
         }
         float temp_arr[10];
         // 处理第一行：帧数、金钱
-        if (rows_count == 0){
-            parse_char(line,temp_arr);
+        if (rows_count == 0) {
+            parse_char(line, temp_arr);
             map->frame = temp_arr[0];
             map->money = temp_arr[1];
         }
-        // 处理第二行-1+map->stage_num：工作台
-        else if(rows_count == 1){
-            parse_char(line,temp_arr);
-            map->stage_num= temp_arr[0];
+            // 处理第二行-1+map->stage_num：工作台
+        else if (rows_count == 1) {
+            parse_char(line, temp_arr);
+            map->stage_num = temp_arr[0];
+        } else if (rows_count <= 1 + map->stage_num) {
+            parse_char(line, temp_arr);
+            map->stage_arr[rows_count - 2].stage_id = temp_arr[0];
+            map->stage_arr[rows_count - 2].pos_x = temp_arr[1];
+            map->stage_arr[rows_count - 2].pos_y = temp_arr[2];
+            map->stage_arr[rows_count - 2].rest_time = temp_arr[3];
+            map->stage_arr[rows_count - 2].material_status = temp_arr[4];
+            map->stage_arr[rows_count - 2].product_status = temp_arr[5];
         }
-        else if(rows_count <= 1+map->stage_num){
-            parse_char(line,temp_arr);
-            map->stage_arr[rows_count-2].stage_id= temp_arr[0];
-            map->stage_arr[rows_count-2].pos_x= temp_arr[1];
-            map->stage_arr[rows_count-2].pos_y= temp_arr[2];
-            map->stage_arr[rows_count-2].rest_time= temp_arr[3];
-            map->stage_arr[rows_count-2].material_status = temp_arr[4];
-            map->stage_arr[rows_count-2].product_status= temp_arr[5];
-        }
-        // 处理剩余行：机器人
-        else{
-            map->robot_arr[rows_count-(2+map->stage_num)].stage_id= temp_arr[0];
-            map->robot_arr[rows_count-(2+map->stage_num)].object_id= temp_arr[1];
-            map->robot_arr[rows_count-(2+map->stage_num)].time_value_coef= temp_arr[2];
-            map->robot_arr[rows_count-(2+map->stage_num)].crash_value_coef= temp_arr[3];
-            map->robot_arr[rows_count-(2+map->stage_num)].v_rad= temp_arr[4];
-            map->robot_arr[rows_count-(2+map->stage_num)].v_x= temp_arr[5];
-            map->robot_arr[rows_count-(2+map->stage_num)].v_y= temp_arr[6];
-            map->robot_arr[rows_count-(2+map->stage_num)].pos_rad= temp_arr[7];
-            map->robot_arr[rows_count-(2+map->stage_num)].pos_x= temp_arr[8];
-            map->robot_arr[rows_count-(2+map->stage_num)].pos_y= temp_arr[9];
+            // 处理剩余行：机器人
+        else {
+            map->robot_arr[rows_count - (2 + map->stage_num)].stage_id = temp_arr[0];
+            map->robot_arr[rows_count - (2 + map->stage_num)].object_id = temp_arr[1];
+            map->robot_arr[rows_count - (2 + map->stage_num)].time_value_coef = temp_arr[2];
+            map->robot_arr[rows_count - (2 + map->stage_num)].crash_value_coef = temp_arr[3];
+            map->robot_arr[rows_count - (2 + map->stage_num)].v_rad = temp_arr[4];
+            map->robot_arr[rows_count - (2 + map->stage_num)].v_x = temp_arr[5];
+            map->robot_arr[rows_count - (2 + map->stage_num)].v_y = temp_arr[6];
+            map->robot_arr[rows_count - (2 + map->stage_num)].pos_rad = temp_arr[7];
+            map->robot_arr[rows_count - (2 + map->stage_num)].pos_x = temp_arr[8];
+            map->robot_arr[rows_count - (2 + map->stage_num)].pos_y = temp_arr[9];
         }
         rows_count++;
     }
@@ -174,7 +171,7 @@ int main() {
     fclose(file);
 
     fopen_s(&file, "..\\IO1.txt", "r");
-    flush_map(file,&my_map);
+    flush_map(file, &my_map);
     fclose(file);
 
 }
