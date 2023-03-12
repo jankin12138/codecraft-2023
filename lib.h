@@ -14,9 +14,13 @@ using namespace std;
 class Task {
 public:
     Task() {};
+
     Task(int a, int b);
-    int init_stage_id;
-    int target_stage_id;
+
+    int init_stage_id;//获取物品工作台类型
+    int target_stage_id;//出售物品工作台类型
+    float target_x;//目标工作台x坐标
+    float target_y;//目标工作台y坐标
 };
 
 //物品
@@ -58,7 +62,7 @@ public:
     int rest_time;//剩余生产时间
     int material_status;//原材料格状态,位表表示
     int product_status;//产品格状态
-    void notify_producer(Producer& p);
+    void notify_producer(Producer &p);
 };
 
 
@@ -76,9 +80,11 @@ public:
     int money;//金钱数
     int stage_num;      //工作台数量
     int robot_num = 4;  //机器人数量
-    Stage stage_arr[50];//工作台序列
+    vector<Stage> stage_arr[10];//工作台序列
     Robot robot_arr[4];//机器人序列
 };
+
+void find_nearest_pos(Map &map, Robot &robot, bool flag);//找到最近的任务目标点
 
 void parse_char(char *line, float *temp_arr);// 子函数：处理char型数组，按照空格切割并翻译为浮点数
 

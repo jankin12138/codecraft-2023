@@ -21,10 +21,10 @@ Task::Task(int a, int b) {
 
 //生产者创建任务队列
 Task Producer::get_task() {
-    if (task_queue.size() == 0) {
+    if (task_queue.empty()) {
         //按固定顺序放入任务队列
-        for (int i = 0; i < 6; i++) {
-            task_queue.push_back(Task(ans_task[i][0], ans_task[i][1]));
+        for (auto ans: ans_task) {
+            task_queue.emplace_back(Task(ans[0], ans[1]));
         }
     }
     Task res = task_queue.front();
@@ -35,8 +35,31 @@ Task Producer::get_task() {
 //工作台完成创建后调用此函数通知生产者
 void Stage::notify_producer(Producer &p) {
     //需要合成的物品有更高优先级
-    if (stage_id < 3) return;
-    p.task_queue.push_front(Task(stage_id, 7));
+    if (stage_id < 4) return;
+    if (stage_id < 7)p.task_queue.push_front(Task(stage_id, 7));
+    if (stage_id == 7) p.task_queue.push_front(Task(7, 8));
+}
+
+//发现当前机器人任务需求工作台最近的那个
+void find_nearest_pos(Map &map, Robot &robot, bool flag) {
+    int target_stage_id;
+    double distance;
+    double min_distance = INT32_MAX;
+    //为真是获取物品位置，为假是出售位置
+    if (flag) {
+        target_stage_id = robot.task.init_stage_id;
+    } else {
+        target_stage_id = robot.task.target_stage_id;
+    }
+    for (auto arr: map.stage_arr[target_stage_id]) {
+        distance = sqrt(pow(robot.pos_y - arr.pos_y, 2) +
+                        pow(robot.pos_x - arr.pos_x, 2));
+        if (distance < min_distance) {
+            min_distance = distance;
+            robot.task.target_x = arr.pos_x;
+            robot.task.target_y = arr.pos_y;
+        }
+    }
 }
 
 // 子函数：处理char型数组，按照空格切割并翻译为浮点数
