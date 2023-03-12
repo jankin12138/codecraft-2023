@@ -62,7 +62,7 @@ public:
     int money;//金钱数
     int stage_num;      //工作台数量
     int robot_num = 4;  //机器人数量
-    Stage stage_arr[50];//工作台序列
+    vector<Stage> stage_arr[10];//工作台序列
     Robot robot_arr[4];//机器人序列
 };
 
