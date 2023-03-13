@@ -1,5 +1,6 @@
 #include <iostream>
 #include <bits/stdc++.h>
+#define _CRT_SECURE_NO_WARNINGS
 
 using namespace std;
 
@@ -44,14 +45,14 @@ class Task {
 //生产者
 class Producer {
 public:
-    Task get_task();//获取目标工作台任务
+    //Task get_task();//获取目标工作台任务
     queue<Task> task_queue;//目标工作台任务队列
 };
 
 //消费者
 class Consumer {
 public:
-    void distribution_task();//任务分配
+    //void distribution_task();//任务分配
     queue<Robot> robot_queue;//空闲机器人
 };
 
@@ -62,25 +63,26 @@ public:
     int money;//金钱数
     int stage_num;      //工作台数量
     int robot_num = 4;  //机器人数量
-    vector<Stage> stage_arr[10];//工作台序列
+    vector<Stage> stage_arr[9];//工作台序列 1-9
     Robot robot_arr[4];//机器人序列
 };
 
 // 子函数：处理char型数组，按照空格切割并翻译为浮点数
-void parse_char(char *line, float *temp_arr) {
+void parse_char(char* line, float* temp_arr) {
     char delims[] = " ";
-    char *temp = NULL;
-    temp = strtok(line, delims);
+    char* temp = NULL;
+    char* context_ptr = NULL;
+    temp = strtok_s(line, delims,&context_ptr); // vs提示strtok不安全,改用strtok_s
     int i = 0;
     while (temp != NULL) {
         temp_arr[i] = atof(temp);
-        temp = strtok(NULL, delims);
+        temp = strtok_s(NULL, delims,&context_ptr);
         i++;
     }
 }
 
-// 从地图读取数据：从本地文件初始化Map,提交代码需要从stdin初始化
-Map init_map(FILE *file) {
+// 从地图读取数据：从本地文件刷新Map,提交代码需要从stdin初始化
+Map init_map(FILE* file) {
     Map map;
     map.frame = 0;
     char line[1024];
@@ -100,11 +102,10 @@ Map init_map(FILE *file) {
                 map.robot_arr[robot_count].pos_y = 50.0 - (rows_count + 1) * 0.5;
                 robot_count++;
             }
-                // 初始化工作台
+            // 初始化工作台
             else if (line[i] >= '1' && line[i] <= '9') {
-                map.stage_arr[stage_count].stage_id = int(line[i] - '0');
-                map.stage_arr[stage_count].pos_x = (i + 1) * 0.5;
-                map.robot_arr[stage_count].pos_y = 50.0 - (rows_count + 1) * 0.5;
+                Stage tempstage = { int(line[i] - '0') ,(i + 1) * 0.5 ,50.0 - (rows_count + 1) * 0.5,-1,0,0 };
+                map.stage_arr[int(line[i] - '1')].push_back(tempstage);
                 stage_count++;
             }
         }
@@ -116,36 +117,38 @@ Map init_map(FILE *file) {
 
 
 // 从每一帧刷新数据：从本地文件初始化Map,提交代码需要从stdin初始化
-void flush_map(FILE *file, Map *map) {
-    map->frame = 0;
+void flush_map(FILE* file, Map* map) {
     char line[1024];
-    int rows_count = 0;
+    int rows_count = 0;        // 帧结构行数计数
+    int stage_counts[9] = {0}; // 工作台各类型数量计数
+    float temp_arr[10];        // 开辟解析数据用的临时空间
     //while (fgets(line, sizeof line, stdin)) {
     while (fgets(line, sizeof line, file)) {
         if (line[0] == 'O' && line[1] == 'K') {
             break;
         }
-        float temp_arr[10];
         // 处理第一行：帧数、金钱
         if (rows_count == 0) {
             parse_char(line, temp_arr);
             map->frame = temp_arr[0];
             map->money = temp_arr[1];
         }
-            // 处理第二行-1+map->stage_num：工作台
+        // 处理第二行-1+map->stage_num：工作台
         else if (rows_count == 1) {
             parse_char(line, temp_arr);
             map->stage_num = temp_arr[0];
-        } else if (rows_count <= 1 + map->stage_num) {
-            parse_char(line, temp_arr);
-            map->stage_arr[rows_count - 2].stage_id = temp_arr[0];
-            map->stage_arr[rows_count - 2].pos_x = temp_arr[1];
-            map->stage_arr[rows_count - 2].pos_y = temp_arr[2];
-            map->stage_arr[rows_count - 2].rest_time = temp_arr[3];
-            map->stage_arr[rows_count - 2].material_status = temp_arr[4];
-            map->stage_arr[rows_count - 2].product_status = temp_arr[5];
         }
-            // 处理剩余行：机器人
+        else if (rows_count <= 1 + map->stage_num) {
+            parse_char(line, temp_arr);
+            map->stage_arr[int(temp_arr[0]) - 1][stage_counts[int(temp_arr[0]) - 1]].stage_id = temp_arr[0];
+            map->stage_arr[int(temp_arr[0]) - 1][stage_counts[int(temp_arr[0]) - 1]].pos_x = temp_arr[1];
+            map->stage_arr[int(temp_arr[0]) - 1][stage_counts[int(temp_arr[0]) - 1]].pos_y = temp_arr[2];
+            map->stage_arr[int(temp_arr[0]) - 1][stage_counts[int(temp_arr[0]) - 1]].rest_time = temp_arr[3];
+            map->stage_arr[int(temp_arr[0]) - 1][stage_counts[int(temp_arr[0]) - 1]].material_status = temp_arr[4];
+            map->stage_arr[int(temp_arr[0]) - 1][stage_counts[int(temp_arr[0]) - 1]].product_status = temp_arr[5];
+            stage_counts[int(temp_arr[0]) - 1]++;
+        }
+        // 处理剩余行：机器人
         else {
             map->robot_arr[rows_count - (2 + map->stage_num)].stage_id = temp_arr[0];
             map->robot_arr[rows_count - (2 + map->stage_num)].object_id = temp_arr[1];
@@ -164,14 +167,23 @@ void flush_map(FILE *file, Map *map) {
 
 
 int main() {
-    // 初始化地图
-    FILE *file;
-    fopen_s(&file, "..\\1.txt", "r");
+    // 初始化地图测试
+    FILE* file;
+    errno_t err = fopen_s(&file, "1.txt", "r");
+    if (err != 0) {
+        printf("文件打开失败，错误代码：%d\n", err);
+        return 1;
+    }
     Map my_map = init_map(file);
     fclose(file);
-
-    fopen_s(&file, "..\\IO1.txt", "r");
+    // 刷新地图测试
+    err = fopen_s(&file, "IO1.txt", "r");
+    if (err != 0) {
+        printf("文件打开失败，错误代码：%d\n", err);
+        return 1;
+    }
     flush_map(file, &my_map);
     fclose(file);
+    return 0;
 
 }

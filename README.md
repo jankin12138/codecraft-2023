@@ -27,18 +27,4 @@
 
 2.增加了每一帧的解析；
 
-3.修改了接口-Map类，增加了工作台数量、机器人数量、金钱，把 vector<Stage> stage_arr[9]改为Stage stage_arr[50]，修改原因一个是后续逐帧刷新atege_arr方便，另一个是本身stage类型可以从对象获取。
-
-```
-//地图
-class Map {
-public:
-    int frame;//当前帧数
-    int money;//金钱数
-    int stage_num;      //工作台数量
-    int robot_num = 4;  //机器人数量
-    Stage stage_arr[50];//工作台序列
-    Robot robot_arr[4];//机器人序列
-};
-```
-
+3.修改了接口-Map类，vector<Stage> stage_arr[9];//工作台序列 1-9
