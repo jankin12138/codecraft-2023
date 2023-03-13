@@ -8,56 +8,56 @@ using namespace std::chrono;
 
 constexpr static double seconds_per_frame = 0.015;
 
-//³£Á¿Çø
+//å¸¸é‡åŒº
 const int ans_task[6][2] = {{3, 6},
                             {2, 6},
                             {3, 5},
                             {1, 5},
                             {2, 4},
-                            {1, 4}};//¹Ì¶¨ÈÎÎñ·ÖÅäË³Ğò
+                            {1, 4}};//å›ºå®šä»»åŠ¡åˆ†é…é¡ºåº
 
 
-//¼ÆËã¾àÀë
+//è®¡ç®—è·ç¦»
 inline float distance(double x1, double y1, double x2, double y2) {
     return pow(pow(x1 - x2, 2) + pow(y1 - y2, 2), 0.5);
 }
 
-//ÈÎÎñ
+//ä»»åŠ¡
 class Task {
 public:
     Task() {};
 
     Task(int a, int b);
 
-    int init_stage_id;//»ñÈ¡ÎïÆ·¹¤×÷Ì¨ÀàĞÍ
-    int target_stage_id;//³öÊÛÎïÆ·¹¤×÷Ì¨ÀàĞÍ
-    float target_x;//Ä¿±ê¹¤×÷Ì¨x×ø±ê
-    float target_y;//Ä¿±ê¹¤×÷Ì¨y×ø±ê
+    int init_stage_id;//è·å–ç‰©å“å·¥ä½œå°ç±»å‹
+    int target_stage_id;//å‡ºå”®ç‰©å“å·¥ä½œå°ç±»å‹
+    float target_x;//ç›®æ ‡å·¥ä½œå°xåæ ‡
+    float target_y;//ç›®æ ‡å·¥ä½œå°yåæ ‡
 };
 
-//ÈÎÎñÀà¹¹Ôìº¯Êı
+//ä»»åŠ¡ç±»æ„é€ å‡½æ•°
 Task::Task(int a, int b) {
     init_stage_id = a;
     target_stage_id = b;
 }
 
-//ÎïÆ·
+//ç‰©å“
 class Object {
-    int buy_price;//¹ºÂò¼Û¸ñ
-    int sell_price;//ÊÛ³ö¼Û¸ñ
+    int buy_price;//è´­ä¹°ä»·æ ¼
+    int sell_price;//å”®å‡ºä»·æ ¼
 };
 
-//Éú²úÕß
+//ç”Ÿäº§è€…
 class Producer {
 public:
-    Task get_task();//»ñÈ¡Ä¿±ê¹¤×÷Ì¨ÈÎÎñ
-    deque<Task> task_queue;//Ä¿±ê¹¤×÷Ì¨ÈÎÎñ¶ÓÁĞ
+    Task get_task();//è·å–ç›®æ ‡å·¥ä½œå°ä»»åŠ¡
+    deque<Task> task_queue;//ç›®æ ‡å·¥ä½œå°ä»»åŠ¡é˜Ÿåˆ—
 };
 
-//Éú²úÕß´´½¨ÈÎÎñ¶ÓÁĞ
+//ç”Ÿäº§è€…åˆ›å»ºä»»åŠ¡é˜Ÿåˆ—
 Task Producer::get_task() {
     if (task_queue.empty()) {
-        //°´¹Ì¶¨Ë³Ğò·ÅÈëÈÎÎñ¶ÓÁĞ
+        //æŒ‰å›ºå®šé¡ºåºæ”¾å…¥ä»»åŠ¡é˜Ÿåˆ—
         for (auto ans: ans_task) {
             task_queue.emplace_back(Task(ans[0], ans[1]));
         }
@@ -67,48 +67,48 @@ Task Producer::get_task() {
     return res;
 };
 
-//¹¤×÷Ì¨
+//å·¥ä½œå°
 class Stage {
 public:
-    int stage_id;//¹¤×÷Ì¨ÀàĞÍ
-    float pos_x;//x×ø±ê
-    float pos_y;//y×ø±ê
-    int rest_time;//Ê£ÓàÉú²úÊ±¼ä
-    int material_status;//Ô­²ÄÁÏ¸ñ×´Ì¬,Î»±í±íÊ¾
-    int product_status;//²úÆ·¸ñ×´Ì¬
-    void notify_producer(Producer &p);//»½ĞÑÉú²úÕß
+    int stage_id;//å·¥ä½œå°ç±»å‹
+    float pos_x;//xåæ ‡
+    float pos_y;//yåæ ‡
+    int rest_time;//å‰©ä½™ç”Ÿäº§æ—¶é—´
+    int material_status;//åŸææ–™æ ¼çŠ¶æ€,ä½è¡¨è¡¨ç¤º
+    int product_status;//äº§å“æ ¼çŠ¶æ€
+    void notify_producer(Producer &p);//å”¤é†’ç”Ÿäº§è€…
 };
 
-//¹¤×÷Ì¨Íê³É´´½¨ºóµ÷ÓÃ´Ëº¯ÊıÍ¨ÖªÉú²úÕß
+//å·¥ä½œå°å®Œæˆåˆ›å»ºåè°ƒç”¨æ­¤å‡½æ•°é€šçŸ¥ç”Ÿäº§è€…
 void Stage::notify_producer(Producer &p) {
-    //ĞèÒªºÏ³ÉµÄÎïÆ·ÓĞ¸ü¸ßÓÅÏÈ¼¶
+    //éœ€è¦åˆæˆçš„ç‰©å“æœ‰æ›´é«˜ä¼˜å…ˆçº§
     if (stage_id < 4) return;
     if (stage_id < 7)p.task_queue.push_front(Task(stage_id, 7));
     if (stage_id == 7) p.task_queue.push_front(Task(7, 8));
 }
 
 
-//»úÆ÷ÈË
+//æœºå™¨äºº
 class Robot {
 public:
-    int stage_id;//Ëù´¦¹¤×÷Ì¨, -1 ±íÊ¾µ±Ç°Ã»ÓĞ´¦ÓÚÈÎºÎ¹¤×÷Ì¨¸½½ü, [0,¹¤×÷Ì¨×ÜÊı-1] ±íÊ¾Ä³¹¤×÷Ì¨µÄÏÂ±ê¡£µ±Ç°»úÆ÷ÈËµÄËùÓĞ¹ºÂò¡¢³öÊÛĞĞÎª¾ùÕë¶Ô¸Ã¹¤×÷Ì¨½øĞĞ¡£
-    int object_id;//ÎïÆ·id, 0 ±íÊ¾Î´Ğ¯´øÎïÆ·, 1-7 ±íÊ¾¶ÔÓ¦ÎïÆ·
-    float time_value_coef;//Ê±¼ä¼ÛÖµÏµÊı
-    float crash_value_coef;//Åö×²¼ÛÖµÏµÊı
-    float v_rad;//½ÇËÙ¶È, ÄæÊ±ÕëÎªÕı, µ¥Î»»¡¶ÈÃ¿Ãë, [-pi, pi]
-    float v_x;//ÏßËÙ¶È
-    float v_y;//ÏßËÙ¶È
-    float pos_rad;//³¯Ïò
-    float pos_x;//x×ø±ê
-    float pos_y;//y×ø±ê
-    bool is_busy;//¿ÕÏĞ×´Ì¬
-    int id; // »úÆ÷ÈËid[0, 3], Ä¿Ç°Ò»¹²Ö»ÓĞ4¸ö»úÆ÷ÈË
+    int stage_id;//æ‰€å¤„å·¥ä½œå°, -1 è¡¨ç¤ºå½“å‰æ²¡æœ‰å¤„äºä»»ä½•å·¥ä½œå°é™„è¿‘, [0,å·¥ä½œå°æ€»æ•°-1] è¡¨ç¤ºæŸå·¥ä½œå°çš„ä¸‹æ ‡ã€‚å½“å‰æœºå™¨äººçš„æ‰€æœ‰è´­ä¹°ã€å‡ºå”®è¡Œä¸ºå‡é’ˆå¯¹è¯¥å·¥ä½œå°è¿›è¡Œã€‚
+    int object_id;//ç‰©å“id, 0 è¡¨ç¤ºæœªæºå¸¦ç‰©å“, 1-7 è¡¨ç¤ºå¯¹åº”ç‰©å“
+    float time_value_coef;//æ—¶é—´ä»·å€¼ç³»æ•°
+    float crash_value_coef;//ç¢°æ’ä»·å€¼ç³»æ•°
+    float v_rad;//è§’é€Ÿåº¦, é€†æ—¶é’ˆä¸ºæ­£, å•ä½å¼§åº¦æ¯ç§’, [-pi, pi]
+    float v_x;//çº¿é€Ÿåº¦
+    float v_y;//çº¿é€Ÿåº¦
+    float pos_rad;//æœå‘
+    float pos_x;//xåæ ‡
+    float pos_y;//yåæ ‡
+    bool is_busy;//ç©ºé—²çŠ¶æ€
+    int id; // æœºå™¨äººid[0, 3], ç›®å‰ä¸€å…±åªæœ‰4ä¸ªæœºå™¨äºº
     Stage const *target_stage;
-    Task task;//µ±Ç°Ö´ĞĞµÄÈÎÎñ
+    Task task;//å½“å‰æ‰§è¡Œçš„ä»»åŠ¡
     constexpr static double v_max = 6;
     constexpr static double v_min = -2;
     constexpr static double v_rad_max = 3.14159;
-    constexpr static double operateDistance = 0.4;// »úÆ÷ÈË²Ù×÷¹¤×÷Ì¨µÄ×îÔ¶¾àÀë
+    constexpr static double operateDistance = 0.4;// æœºå™¨äººæ“ä½œå·¥ä½œå°çš„æœ€è¿œè·ç¦»
     constexpr static int no_stage = -1;
     constexpr static int no_object = 0;
 
@@ -136,12 +136,12 @@ public:
     }
 
     void go_to_stage(Stage const &stage) {
-        assert(!is_busy); // ÔÚ¿ÕÏĞÊ±²ÅÄÜÇ°ÍùÏÂÒ»¸ö¹¤×÷Ì¨
+        assert(!is_busy); // åœ¨ç©ºé—²æ—¶æ‰èƒ½å‰å¾€ä¸‹ä¸€ä¸ªå·¥ä½œå°
         target_stage = &stage;
         is_busy = true;
     }
 
-    /// Ã¿Ö¡µ÷ÓÃ£¬Éú³É»úÆ÷ÈËĞĞÎª¶ÔÓ¦Êä³ö
+    /// æ¯å¸§è°ƒç”¨ï¼Œç”Ÿæˆæœºå™¨äººè¡Œä¸ºå¯¹åº”è¾“å‡º
     void tick() {
         if (!is_busy)
             return;
@@ -150,18 +150,18 @@ public:
         double target_rad = atan((target_stage->pos_y - pos_y) / (target_stage->pos_x - pos_x));
         double dist_rad = target_rad - pos_rad;
         if (dist_rad) {
-            // ×ª¶¯
+            // è½¬åŠ¨
             if (dist_rad > 0)
                 rotate(min(3.14159, dist_rad / seconds_per_frame));
             else
                 rotate(max(-3.14159, dist_rad / seconds_per_frame));
             forward(0);
         } else if (dist >= operateDistance) {
-            // Ç°½ø
+            // å‰è¿›
             rotate(0);
             forward(min(6.0, dist / seconds_per_frame));
         } else {
-            // ÒÑµ½´ïÄ¿±ê¹¤×÷Ì¨¸½½ü
+            // å·²åˆ°è¾¾ç›®æ ‡å·¥ä½œå°é™„è¿‘
             is_busy = false;
             forward(0);
             rotate(0);
@@ -178,52 +178,52 @@ istream &operator>>(istream &in, Robot &robot) {
 }
 
 
-//Ïû·ÑÕß
+//æ¶ˆè´¹è€…
 class Consumer {
 public:
-    //void distribution_task();//ÈÎÎñ·ÖÅä
-    queue<Robot> robot_queue;//¿ÕÏĞ»úÆ÷ÈË
+    //void distribution_task();//ä»»åŠ¡åˆ†é…
+    queue<Robot> robot_queue;//ç©ºé—²æœºå™¨äºº
 };
 
-//µØÍ¼
+//åœ°å›¾
 class Map {
 public:
-    int frame;//µ±Ç°Ö¡Êı
-    int money;//½ğÇ®Êı
-    int stage_num;      //¹¤×÷Ì¨ÊıÁ¿
-    int robot_num = 4;  //»úÆ÷ÈËÊıÁ¿
-    vector<Stage> stage_arr[9];//¹¤×÷Ì¨ĞòÁĞ 1-9
-    Robot robot_arr[4];//»úÆ÷ÈËĞòÁĞ
+    int frame;//å½“å‰å¸§æ•°
+    int money;//é‡‘é’±æ•°
+    int stage_num;      //å·¥ä½œå°æ•°é‡
+    int robot_num = 4;  //æœºå™¨äººæ•°é‡
+    vector<Stage> stage_arr[9];//å·¥ä½œå°åºåˆ— 1-9
+    Robot robot_arr[4];//æœºå™¨äººåºåˆ—
 };
 
-//ÅĞ¶ÏÔ­²ÄÁÏ¸ñÕ¼ÓÃÇé¿ö
+//åˆ¤æ–­åŸææ–™æ ¼å ç”¨æƒ…å†µ
 bool material_exist(Stage &stage, Robot &robot) {
     int id = robot.task.init_stage_id;
     int material_tmp = stage.material_status;
     return (material_tmp >> id) & 1 == 1;
 }
 
-//ÕÒµ½×î½üµÄÈÎÎñÄ¿±êµã
+//æ‰¾åˆ°æœ€è¿‘çš„ä»»åŠ¡ç›®æ ‡ç‚¹
 void find_nearest_pos(Map &map, Robot &robot, bool flag) {
     int target_stage_id;
     float dis;
     float min_distance = INT32_MAX;
-    //ÎªÕæÊÇ»ñÈ¡ÎïÆ·Î»ÖÃ£¬Îª¼ÙÊÇ³öÊÛÎ»ÖÃ
+    //ä¸ºçœŸæ˜¯è·å–ç‰©å“ä½ç½®ï¼Œä¸ºå‡æ˜¯å‡ºå”®ä½ç½®
     if (flag) {
         target_stage_id = robot.task.init_stage_id;
     } else {
         target_stage_id = robot.task.target_stage_id;
     }
     for (auto arr: map.stage_arr[target_stage_id]) {
-        //ÅĞ¶ÏÊÇ·ñÓĞÎïÆ·
+        //åˆ¤æ–­æ˜¯å¦æœ‰ç‰©å“
         if (flag && arr.product_status != 1) {
             continue;
         }
-        //ÅĞ¶ÏÄ¿±ê¹¤×÷Ì¨Ô­ÁÏ¸ñÊÇ·ñ±»Õ¼ÓÃ
+        //åˆ¤æ–­ç›®æ ‡å·¥ä½œå°åŸæ–™æ ¼æ˜¯å¦è¢«å ç”¨
         if (!flag && !material_exist(arr, robot)) {
             continue;
         }
-        //¼ÆËã·ûºÏÌõ¼şµÄ×î½üµÄ¾àÀë
+        //è®¡ç®—ç¬¦åˆæ¡ä»¶çš„æœ€è¿‘çš„è·ç¦»
         dis = distance(robot.pos_x, robot.pos_y, arr.pos_x, arr.pos_y);
         if (dis < min_distance) {
             min_distance = dis;
@@ -234,12 +234,12 @@ void find_nearest_pos(Map &map, Robot &robot, bool flag) {
 }
 
 
-// ×Óº¯Êı£º´¦ÀícharĞÍÊı×é£¬°´ÕÕ¿Õ¸ñÇĞ¸î²¢·­ÒëÎª¸¡µãÊı
+// å­å‡½æ•°ï¼šå¤„ç†charå‹æ•°ç»„ï¼ŒæŒ‰ç…§ç©ºæ ¼åˆ‡å‰²å¹¶ç¿»è¯‘ä¸ºæµ®ç‚¹æ•°
 void parse_char(char *line, float *temp_arr) {
     char delims[] = " ";
     char *temp = NULL;
     char *context_ptr = NULL;
-    temp = strtok_s(line, delims, &context_ptr); // vsÌáÊ¾strtok²»°²È«,¸ÄÓÃstrtok_s
+    temp = strtok_s(line, delims, &context_ptr); // vsæç¤ºstrtokä¸å®‰å…¨,æ”¹ç”¨strtok_s
     int i = 0;
     while (temp != NULL) {
         temp_arr[i] = atof(temp);
@@ -248,7 +248,7 @@ void parse_char(char *line, float *temp_arr) {
     }
 }
 
-// ´ÓµØÍ¼¶ÁÈ¡Êı¾İ£º´Ó±¾µØÎÄ¼şË¢ĞÂMap,Ìá½»´úÂëĞèÒª´Óstdin³õÊ¼»¯
+// ä»åœ°å›¾è¯»å–æ•°æ®ï¼šä»æœ¬åœ°æ–‡ä»¶åˆ·æ–°Map,æäº¤ä»£ç éœ€è¦ä»stdinåˆå§‹åŒ–
 Map init_map(FILE *file) {
     Map map;
     map.frame = 0;
@@ -261,15 +261,15 @@ Map init_map(FILE *file) {
         if (line[0] == 'O' && line[1] == 'K') {
             break;
         }
-        // ½âÎöÃ¿Ò»ĞĞÊı¾İ
+        // è§£ææ¯ä¸€è¡Œæ•°æ®
         for (int i = 0; i < strlen(line); i++) {
-            // ³õÊ¼»¯»úÆ÷ÈË
+            // åˆå§‹åŒ–æœºå™¨äºº
             if (line[i] == 'A') {
                 map.robot_arr[robot_count].pos_x = (i + 1) * 0.5;
                 map.robot_arr[robot_count].pos_y = 50.0 - (rows_count + 1) * 0.5;
                 robot_count++;
             }
-                // ³õÊ¼»¯¹¤×÷Ì¨
+                // åˆå§‹åŒ–å·¥ä½œå°
             else if (line[i] >= '1' && line[i] <= '9') {
                 Stage tempstage = {int(line[i] - '0'), (i + 1) * 0.5, 50.0 - (rows_count + 1) * 0.5, -1, 0, 0};
                 map.stage_arr[int(line[i] - '1')].push_back(tempstage);
@@ -283,24 +283,24 @@ Map init_map(FILE *file) {
 }
 
 
-// ´ÓÃ¿Ò»Ö¡Ë¢ĞÂÊı¾İ£º´Ó±¾µØÎÄ¼ş³õÊ¼»¯Map,Ìá½»´úÂëĞèÒª´Óstdin³õÊ¼»¯
+// ä»æ¯ä¸€å¸§åˆ·æ–°æ•°æ®ï¼šä»æœ¬åœ°æ–‡ä»¶åˆå§‹åŒ–Map,æäº¤ä»£ç éœ€è¦ä»stdinåˆå§‹åŒ–
 void flush_map(FILE *file, Map *map) {
     char line[1024];
-    int rows_count = 0;        // Ö¡½á¹¹ĞĞÊı¼ÆÊı
-    int stage_counts[9] = {0}; // ¹¤×÷Ì¨¸÷ÀàĞÍÊıÁ¿¼ÆÊı
-    float temp_arr[10];        // ¿ª±Ù½âÎöÊı¾İÓÃµÄÁÙÊ±¿Õ¼ä
+    int rows_count = 0;        // å¸§ç»“æ„è¡Œæ•°è®¡æ•°
+    int stage_counts[9] = {0}; // å·¥ä½œå°å„ç±»å‹æ•°é‡è®¡æ•°
+    float temp_arr[10];        // å¼€è¾Ÿè§£ææ•°æ®ç”¨çš„ä¸´æ—¶ç©ºé—´
     //while (fgets(line, sizeof line, stdin)) {
     while (fgets(line, sizeof line, file)) {
         if (line[0] == 'O' && line[1] == 'K') {
             break;
         }
-        // ´¦ÀíµÚÒ»ĞĞ£ºÖ¡Êı¡¢½ğÇ®
+        // å¤„ç†ç¬¬ä¸€è¡Œï¼šå¸§æ•°ã€é‡‘é’±
         if (rows_count == 0) {
             parse_char(line, temp_arr);
             map->frame = temp_arr[0];
             map->money = temp_arr[1];
         }
-            // ´¦ÀíµÚ¶şĞĞ-1+map->stage_num£º¹¤×÷Ì¨
+            // å¤„ç†ç¬¬äºŒè¡Œ-1+map->stage_numï¼šå·¥ä½œå°
         else if (rows_count == 1) {
             parse_char(line, temp_arr);
             map->stage_num = temp_arr[0];
@@ -314,7 +314,7 @@ void flush_map(FILE *file, Map *map) {
             map->stage_arr[int(temp_arr[0]) - 1][stage_counts[int(temp_arr[0]) - 1]].product_status = temp_arr[5];
             stage_counts[int(temp_arr[0]) - 1]++;
         }
-            // ´¦ÀíÊ£ÓàĞĞ£º»úÆ÷ÈË
+            // å¤„ç†å‰©ä½™è¡Œï¼šæœºå™¨äºº
         else {
             map->robot_arr[rows_count - (2 + map->stage_num)].stage_id = temp_arr[0];
             map->robot_arr[rows_count - (2 + map->stage_num)].object_id = temp_arr[1];
@@ -345,19 +345,19 @@ void test_robot() {
 }
 
 int main() {
-    // ³õÊ¼»¯µØÍ¼²âÊÔ
+    // åˆå§‹åŒ–åœ°å›¾æµ‹è¯•
     FILE *file;
     errno_t err = fopen_s(&file, "1.txt", "r");
     if (err != 0) {
-        printf("ÎÄ¼ş´ò¿ªÊ§°Ü£¬´íÎó´úÂë£º%d\n", err);
+        printf("æ–‡ä»¶æ‰“å¼€å¤±è´¥ï¼Œé”™è¯¯ä»£ç ï¼š%d\n", err);
         return 1;
     }
     Map my_map = init_map(file);
     fclose(file);
-    // Ë¢ĞÂµØÍ¼²âÊÔ
+    // åˆ·æ–°åœ°å›¾æµ‹è¯•
     err = fopen_s(&file, "IO1.txt", "r");
     if (err != 0) {
-        printf("ÎÄ¼ş´ò¿ªÊ§°Ü£¬´íÎó´úÂë£º%d\n", err);
+        printf("æ–‡ä»¶æ‰“å¼€å¤±è´¥ï¼Œé”™è¯¯ä»£ç ï¼š%d\n", err);
         return 1;
     }
     flush_map(file, &my_map);
