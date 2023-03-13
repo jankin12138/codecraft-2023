@@ -3,27 +3,18 @@
 #define _CRT_SECURE_NO_WARNINGS
 
 using namespace std;
+using namespace std::chrono;
+
+constexpr static double seconds_per_frame = 0.015;
+
+inline float distance(double x1, double y1, double x2, double y2) {
+    return pow(pow(x1 - x2, 2) + pow(y1 - y2, 2), 0.5);
+}
 
 //物品
 class Object {
     int buy_price;//购买价格
     int sell_price;//售出价格
-};
-
-//机器人
-class Robot {
-public:
-    int stage_id;//工作台
-    int object_id;//物品id
-    float time_value_coef;//时间价值系数
-    float crash_value_coef;//碰撞价值系数
-    float v_rad;//角速度
-    float v_x;//线速度
-    float v_y;//线速度
-    float pos_rad;//朝向
-    float pos_x;//x坐标
-    float pos_y;//y坐标
-    bool is_busy;//空闲状态
 };
 
 //工作台
@@ -36,6 +27,94 @@ public:
     int material_status;//原材料格状态,位表表示
     int product_status;//产品格状态
 };
+
+//机器人
+class Robot {
+public:
+    int stage_id;//所处工作台, -1 表示当前没有处于任何工作台附近, [0,工作台总数-1] 表示某工作台的下标。当前机器人的所有购买、出售行为均针对该工作台进行。
+    int object_id;//物品id, 0 表示未携带物品, 1-7 表示对应物品
+    float time_value_coef;//时间价值系数
+    float crash_value_coef;//碰撞价值系数
+    float v_rad;//角速度, 逆时针为正, 单位弧度每秒, [-pi, pi]
+    float v_x;//线速度
+    float v_y;//线速度
+    float pos_rad;//朝向
+    float pos_x;//x坐标
+    float pos_y;//y坐标
+    bool is_busy;//空闲状态
+    int id; // 机器人id[0, 3], 目前一共只有4个机器人
+    Stage const *target_stage;
+    constexpr static double v_max = 6;
+    constexpr static double v_min = -2;
+    constexpr static double v_rad_max = 3.14159;
+    constexpr static double operateDistance = 0.4;// 机器人操作工作台的最远距离
+    constexpr static int no_stage = -1;
+    constexpr static int no_object = 0;
+
+    Robot() : id(-1), pos_x(-1), pos_y(-1), stage_id(no_stage), object_id(no_object) {
+    }
+
+    void forward(float v) {
+        cout << "forward" << ' ' << id << ' ' << v << endl;
+    }
+
+    void rotate(float v) {
+        cout << "rotate" << ' ' << id << ' ' << v << endl;
+    }
+
+    void buy() {
+        cout << "buy" << ' ' << id << endl;
+    }
+
+    void sell() {
+        cout << "sell" << ' ' << id << endl;
+    }
+
+    void destroy() {
+        cout << "destroy" << ' ' << id << endl;
+    }
+
+    void go_to_stage(Stage const &stage) {
+        assert(!is_busy); // 在空闲时才能前往下一个工作台
+        target_stage = &stage;
+        is_busy = true;
+    }
+
+    /// 每帧调用，生成机器人行为对应输出
+    void tick() {
+        if (!is_busy)
+            return;
+
+        double dist = distance(pos_x, pos_y, target_stage->pos_x, target_stage->pos_y);
+        double target_rad = atan((target_stage->pos_y - pos_y) / (target_stage->pos_x - pos_x));
+        double dist_rad = target_rad - pos_rad;
+        if (dist_rad) {
+            // 转动
+            if (dist_rad > 0)
+                rotate(min(3.14159, dist_rad / seconds_per_frame));
+            else
+                rotate(max(-3.14159, dist_rad / seconds_per_frame));
+            forward(0);
+        } else if (dist >= operateDistance) {
+            // 前进
+            rotate(0);
+            forward(min(6.0, dist / seconds_per_frame));
+        } else {
+            // 已到达目标工作台附近
+            is_busy = false;
+            forward(0);
+            rotate(0);
+            return;
+        }
+    }
+
+};
+
+istream &operator>>(istream &in, Robot &robot) {
+    in >> robot.stage_id >> robot.object_id >> robot.time_value_coef >> robot.crash_value_coef >> robot.v_rad
+       >> robot.v_x >> robot.v_y >> robot.pos_rad >> robot.pos_x >> robot.pos_y;
+    return in;
+}
 
 //任务
 class Task {
@@ -165,6 +244,18 @@ void flush_map(FILE* file, Map* map) {
     }
 }
 
+void test_robot() {
+    Robot robot;
+    Stage stage;
+    robot.id = 0;
+    robot.pos_x = 0;
+    stage.pos_x = 10;
+    stage.pos_y = 5;
+    robot.go_to_stage(stage);
+    while (robot.is_busy) {
+        robot.tick();
+    }
+}
 
 int main() {
     // 初始化地图测试
