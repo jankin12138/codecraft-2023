@@ -434,7 +434,7 @@ int main() {
     FILE *file;
     errno_t err = fopen_s(&file, "1.txt", "r");
     if (err != 0) {
-        printf("文件打开失败，错误代码：%d\n", err);
+        printf("File open error:%d\n", err);
         return 1;
     }
     Map my_map = init_map(file);
@@ -442,7 +442,7 @@ int main() {
     // 刷新地图测试
     err = fopen_s(&file, "IO1.txt", "r");
     if (err != 0) {
-        printf("文件打开失败，错误代码：%d\n", err);
+        printf("File open error:%d\n", err);
         return 1;
     }
     flush_map(file, &my_map);
