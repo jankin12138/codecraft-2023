@@ -6,7 +6,10 @@
 using namespace std;
 using namespace std::chrono;
 
+constexpr static double pi = 3.14159;
 constexpr static double seconds_per_frame = 0.015;
+constexpr static int no_stage = -1;
+constexpr static int no_object = 0;
 
 //常量区
 const int ans_task[6][2] = {{3, 6},
@@ -73,11 +76,71 @@ public:
     int stage_id;//工作台类型
     float pos_x;//x坐标
     float pos_y;//y坐标
-    int rest_time;//剩余生产时间
+    constexpr static int not_producing = -1;
+    constexpr static int blocking = 0;
+    int rest_time;//剩余生产时间, -1表示不在生产, 0表示生产因输出格满而阻塞, >=0表示剩余生产帧数
     int material_status;//原材料格状态,位表表示
-    int product_status;//产品格状态
+    int product_status;//产品格状态, 0为无, 1为有
     void notify_producer(Producer &p);//唤醒生产者
+    int product_object_id() const; // 生产物品id
+    bool is_raw_material(int object_id) const{
+        assert(1 <= object_id && object_id <= 7);
+        auto object_ids = get_raw_material_ids();
+        for (auto id : object_ids) {
+            if (id == object_id)
+                return true;
+        }
+        return false;
+    }
+
+    vector<int> get_raw_material_ids() const{
+        switch (stage_id) {
+            case 1:
+            case 2:
+            case 3:
+                return {};
+            case 4:
+                return {1, 2};
+            case 5:
+                return {1, 3};
+            case 6:
+                return {2, 3};
+            case 7:
+                return {4, 5, 6};
+            case 8:
+                return {7};
+            case 9:
+                return {1, 2, 3, 4, 5, 6, 7};
+            default:
+                assert(false);
+        }
+    }
+
+    /// 返回是否成功接受
+    bool rcv_raw_material(int object_id) {
+        assert(is_raw_material(object_id));
+        if ((material_status >> object_id) & 1)
+            return false;
+        material_status |= 1 << object_id;
+        return true;
+    }
+
+    bool is_raw_materials_ready() const{
+        for (auto id : get_raw_material_ids()) {
+            if (!((material_status>>id) & 1))
+                return false;
+        }
+        return true;
+    }
 };
+
+int Stage::product_object_id() const {
+    assert(1 <= stage_id && stage_id <= 9);
+    if (stage_id <= 7) // 当stage_id<=7, stage生产的物品id与 stage_id 相同
+        return stage_id;
+    else // stage_id = 8, 9 为消耗型stage, 不生产物品
+        return no_object;
+}
 
 //工作台完成创建后调用此函数通知生产者
 void Stage::notify_producer(Producer &p) {
@@ -86,7 +149,6 @@ void Stage::notify_producer(Producer &p) {
     if (stage_id < 7)p.task_queue.push_front(Task(stage_id, 7));
     if (stage_id == 7) p.task_queue.push_front(Task(7, 8));
 }
-
 
 //机器人
 class Robot {
@@ -103,42 +165,65 @@ public:
     float pos_y;//y坐标
     bool is_busy;//空闲状态
     int id; // 机器人id[0, 3], 目前一共只有4个机器人
-    Stage const *target_stage;
+    Stage *target_stage;
     Task task;//当前执行的任务
     constexpr static double v_max = 6;
     constexpr static double v_min = -2;
     constexpr static double v_rad_max = 3.14159;
-    constexpr static double operateDistance = 0.4;// 机器人操作工作台的最远距离
-    constexpr static int no_stage = -1;
-    constexpr static int no_object = 0;
+    constexpr static double operate_distance = 0.4;// 机器人操作工作台的最远距离
+
 
     Robot() : id(-1), pos_x(-1), pos_y(-1), stage_id(no_stage), object_id(no_object) {
     }
 
-    void forward(float v) {
+    void print_forward(float v) {
         cout << "forward" << ' ' << id << ' ' << v << endl;
     }
 
-    void rotate(float v) {
+    void print_rotate(float v) {
         cout << "rotate" << ' ' << id << ' ' << v << endl;
     }
 
-    void buy() {
+    void print_buy() {
         cout << "buy" << ' ' << id << endl;
     }
 
-    void sell() {
+    void print_sell() {
         cout << "sell" << ' ' << id << endl;
     }
 
-    void destroy() {
+    void print_destroy() {
         cout << "destroy" << ' ' << id << endl;
     }
 
-    void go_to_stage(Stage const &stage) {
+    void go_to_stage(Stage &stage) {
         assert(!is_busy); // 在空闲时才能前往下一个工作台
         target_stage = &stage;
         is_busy = true;
+    }
+
+    void buy() {
+        assert(distance(pos_x, pos_y, target_stage->pos_x, target_stage->pos_y) < operate_distance); // 距离足够近
+        assert(object_id == no_object); // 购买前机器人需没有其他物品
+        assert(target_stage->product_status); // 工作台产品格需已有物品
+        object_id = target_stage->product_object_id();
+        assert(object_id != no_object); // 工作台需为生产型
+        target_stage->product_status = 0; // 工作台产品格清空
+        print_buy();
+    }
+
+    void sell() {
+        assert(object_id != no_object); // 购买前机器人需持有一样物品
+        assert(target_stage->is_raw_material(object_id)); // 机器人持有物品需为工作台原料
+        assert(target_stage->rcv_raw_material(object_id)); // 可能工作台原料格已占用无法接受
+        object_id = no_object;
+        print_sell();
+    }
+
+    void destroy() {
+        assert(object_id != no_object);
+        object_id = no_object;
+        print_destroy();
     }
 
     /// 每帧调用，生成机器人行为对应输出
@@ -152,19 +237,19 @@ public:
         if (dist_rad) {
             // 转动
             if (dist_rad > 0)
-                rotate(min(3.14159, dist_rad / seconds_per_frame));
+                print_rotate(min(pi, dist_rad / seconds_per_frame));
             else
-                rotate(max(-3.14159, dist_rad / seconds_per_frame));
-            forward(0);
-        } else if (dist >= operateDistance) {
+                print_rotate(max(-pi, dist_rad / seconds_per_frame));
+            print_forward(0);
+        } else if (dist >= operate_distance) {
             // 前进
-            rotate(0);
-            forward(min(6.0, dist / seconds_per_frame));
+            print_rotate(0);
+            print_forward(min(6.0, dist / seconds_per_frame));
         } else {
             // 已到达目标工作台附近
             is_busy = false;
-            forward(0);
-            rotate(0);
+            print_forward(0);
+            print_rotate(0);
             return;
         }
     }
