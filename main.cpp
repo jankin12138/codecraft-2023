@@ -1,5 +1,6 @@
 #include <iostream>
 #include <bits/stdc++.h>
+#include <string>
 
 #define _CRT_SECURE_NO_WARNINGS
 
@@ -83,17 +84,17 @@ public:
     int product_status;//产品格状态, 0为无, 1为有
     void notify_producer(Producer &p);//唤醒生产者
     int product_object_id() const; // 生产物品id
-    bool is_raw_material(int object_id) const{
+    bool is_raw_material(int object_id) const {
         assert(1 <= object_id && object_id <= 7);
         auto object_ids = get_raw_material_ids();
-        for (auto id : object_ids) {
+        for (auto id: object_ids) {
             if (id == object_id)
                 return true;
         }
         return false;
     }
 
-    vector<int> get_raw_material_ids() const{
+    vector<int> get_raw_material_ids() const {
         switch (stage_id) {
             case 1:
             case 2:
@@ -125,9 +126,9 @@ public:
         return true;
     }
 
-    bool is_raw_materials_ready() const{
-        for (auto id : get_raw_material_ids()) {
-            if (!((material_status>>id) & 1))
+    bool is_raw_materials_ready() const {
+        for (auto id: get_raw_material_ids()) {
+            if (!((material_status >> id) & 1))
                 return false;
         }
         return true;
@@ -391,26 +392,28 @@ void flush_map(FILE *file, Map *map) {
             map->stage_num = temp_arr[0];
         } else if (rows_count <= 1 + map->stage_num) {
             parse_char(line, temp_arr);
-            map->stage_arr[int(temp_arr[0]) - 1][stage_counts[int(temp_arr[0]) - 1]].stage_id = temp_arr[0];
-            map->stage_arr[int(temp_arr[0]) - 1][stage_counts[int(temp_arr[0]) - 1]].pos_x = temp_arr[1];
-            map->stage_arr[int(temp_arr[0]) - 1][stage_counts[int(temp_arr[0]) - 1]].pos_y = temp_arr[2];
-            map->stage_arr[int(temp_arr[0]) - 1][stage_counts[int(temp_arr[0]) - 1]].rest_time = temp_arr[3];
-            map->stage_arr[int(temp_arr[0]) - 1][stage_counts[int(temp_arr[0]) - 1]].material_status = temp_arr[4];
-            map->stage_arr[int(temp_arr[0]) - 1][stage_counts[int(temp_arr[0]) - 1]].product_status = temp_arr[5];
+            Stage& stage = map->stage_arr[int(temp_arr[0]) - 1][stage_counts[int(temp_arr[0]) - 1]];
+            stage.stage_id = temp_arr[0];
+            stage.pos_x = temp_arr[1];
+            stage.pos_y = temp_arr[2];
+            stage.rest_time = temp_arr[3];
+            stage.material_status = temp_arr[4];
+            stage.product_status = temp_arr[5];
             stage_counts[int(temp_arr[0]) - 1]++;
         }
             // 处理剩余行：机器人
         else {
-            map->robot_arr[rows_count - (2 + map->stage_num)].stage_id = temp_arr[0];
-            map->robot_arr[rows_count - (2 + map->stage_num)].object_id = temp_arr[1];
-            map->robot_arr[rows_count - (2 + map->stage_num)].time_value_coef = temp_arr[2];
-            map->robot_arr[rows_count - (2 + map->stage_num)].crash_value_coef = temp_arr[3];
-            map->robot_arr[rows_count - (2 + map->stage_num)].v_rad = temp_arr[4];
-            map->robot_arr[rows_count - (2 + map->stage_num)].v_x = temp_arr[5];
-            map->robot_arr[rows_count - (2 + map->stage_num)].v_y = temp_arr[6];
-            map->robot_arr[rows_count - (2 + map->stage_num)].pos_rad = temp_arr[7];
-            map->robot_arr[rows_count - (2 + map->stage_num)].pos_x = temp_arr[8];
-            map->robot_arr[rows_count - (2 + map->stage_num)].pos_y = temp_arr[9];
+            Robot& robot = map->robot_arr[rows_count - (2 + map->stage_num)];
+            robot.stage_id = temp_arr[0];
+            robot.object_id = temp_arr[1];
+            robot.time_value_coef = temp_arr[2];
+            robot.crash_value_coef = temp_arr[3];
+            robot.v_rad = temp_arr[4];
+            robot.v_x = temp_arr[5];
+            robot.v_y = temp_arr[6];
+            robot.pos_rad = temp_arr[7];
+            robot.pos_x = temp_arr[8];
+            robot.pos_y = temp_arr[9];
         }
         rows_count++;
     }
@@ -431,19 +434,18 @@ void test_robot() {
 
 int main() {
     // 初始化地图测试
-    FILE *file;
-    errno_t err = fopen_s(&file, "1.txt", "r");
-    if (err != 0) {
-        printf("File open error:%d\n", err);
-        return 1;
+    FILE *file = fopen("./1.txt", "r");
+    if (!file) {
+        perror("file open error");
+        exit(1);
     }
     Map my_map = init_map(file);
     fclose(file);
     // 刷新地图测试
-    err = fopen_s(&file, "IO1.txt", "r");
-    if (err != 0) {
-        printf("File open error:%d\n", err);
-        return 1;
+    file = fopen("./IO1.txt", "r");
+    if (!file) {
+        perror("file open error2");
+        exit(1);
     }
     flush_map(file, &my_map);
     fclose(file);
