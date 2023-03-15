@@ -133,6 +133,34 @@ public:
         }
         return true;
     }
+
+    int produce_time() {
+        assert(1 <= stage_id && stage_id <= 9);
+        if (stage_id <= 3)
+            return 50;
+        if (stage_id <= 6)
+            return 500;
+        if (stage_id == 7)
+            return 1000;
+        return 1;
+    }
+
+    /// 每帧调用
+    void tick() {
+        if (rest_time == not_producing) {
+            if (is_raw_materials_ready()) {
+                material_status = 0; // 产品格清空
+                rest_time = produce_time(); // 进入生产周期
+            }
+        }
+        if (rest_time > 0)
+            --rest_time;
+        if (rest_time == blocking && product_status == 0) {
+            rest_time = not_producing;
+            product_status = 1;
+        }
+    }
+
 };
 
 int Stage::product_object_id() const {
@@ -392,7 +420,7 @@ void flush_map(FILE *file, Map *map) {
             map->stage_num = temp_arr[0];
         } else if (rows_count <= 1 + map->stage_num) {
             parse_char(line, temp_arr);
-            Stage& stage = map->stage_arr[int(temp_arr[0]) - 1][stage_counts[int(temp_arr[0]) - 1]];
+            Stage &stage = map->stage_arr[int(temp_arr[0]) - 1][stage_counts[int(temp_arr[0]) - 1]];
             stage.stage_id = temp_arr[0];
             stage.pos_x = temp_arr[1];
             stage.pos_y = temp_arr[2];
@@ -403,7 +431,7 @@ void flush_map(FILE *file, Map *map) {
         }
             // 处理剩余行：机器人
         else {
-            Robot& robot = map->robot_arr[rows_count - (2 + map->stage_num)];
+            Robot &robot = map->robot_arr[rows_count - (2 + map->stage_num)];
             robot.stage_id = temp_arr[0];
             robot.object_id = temp_arr[1];
             robot.time_value_coef = temp_arr[2];
