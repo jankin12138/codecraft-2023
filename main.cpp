@@ -10,8 +10,7 @@
 #include "Task.hpp"
 #include "util.hpp"
 
-#define _CRT_SECURE_NO_WARNINGS
-
+//#define _CRT_SECURE_NO_WARNINGS // 改为在编辑器设置
 using namespace std;
 
 //判断原材料格占用情况
@@ -52,122 +51,51 @@ void find_nearest_pos(Map &map, Robot &robot, bool flag) {
 }
 
 
-// 子函数：处理char型数组，按照空格切割并翻译为浮点数
-void parse_char(char *line, double *temp_arr) {
-    char delims[] = " ";
-    char *temp = NULL;
-    char *context_ptr = NULL;
-    temp = strtok_s(line, delims, &context_ptr); // vs提示strtok不安全,改用strtok_s
-    int i = 0;
-    while (temp != NULL) {
-        temp_arr[i] = atof(temp);
-        temp = strtok_s(NULL, delims, &context_ptr);
-        i++;
-    }
-}
-
-// 从地图读取数据：从本地文件刷新Map,提交代码需要从stdin初始化
-Map init_map(FILE *file) {
-    Map map;
-    map.frame = 0;
-    char line[1024];
-    int robot_count = 0;
-    int stage_count = 0;
-    int rows_count = 0;
-    //while (fgets(line, sizeof line, stdin)) {
-    while (fgets(line, sizeof line, file)) {
-        if (line[0] == 'O' && line[1] == 'K') {
-            break;
-        }
-        // 解析每一行数据
-        for (int i = 0; i < strlen(line); i++) {
-            // 初始化机器人
-            if (line[i] == 'A') {
-                map.robot_arr[robot_count].pos_x = (i + 1) * 0.5;
-                map.robot_arr[robot_count].pos_y = 50.0 - (rows_count + 1) * 0.5;
-                robot_count++;
-            }
-                // 初始化工作台
-            else if (line[i] >= '1' && line[i] <= '9') {
-                Stage tempstage = {int(line[i] - '0'), (i + 1) * 0.5, 50.0 - (rows_count + 1) * 0.5, -1, 0, 0};
-                map.stage_arr[int(line[i] - '1')].push_back(tempstage);
-                stage_count++;
-            }
-        }
-        rows_count++;
-    }
-    map.stage_num = stage_count;
-    return map;
-}
 
 
-// 从每一帧刷新数据：从本地文件初始化Map,提交代码需要从stdin初始化
-void flush_map(FILE *file, Map *map) {
-    char line[1024];
-    int rows_count = 0;        // 帧结构行数计数
-    int stage_counts[9] = {0}; // 工作台各类型数量计数
-    double temp_arr[10];        // 开辟解析数据用的临时空间
-    //while (fgets(line, sizeof line, stdin)) {
-    while (fgets(line, sizeof line, file)) {
-        if (line[0] == 'O' && line[1] == 'K') {
-            break;
-        }
-        // 处理第一行：帧数、金钱
-        if (rows_count == 0) {
-            parse_char(line, temp_arr);
-            map->frame = temp_arr[0];
-            map->money = temp_arr[1];
-        }
-            // 处理第二行-1+map->stage_num：工作台
-        else if (rows_count == 1) {
-            parse_char(line, temp_arr);
-            map->stage_num = temp_arr[0];
-        } else if (rows_count <= 1 + map->stage_num) {
-            parse_char(line, temp_arr);
-            Stage &stage = map->stage_arr[int(temp_arr[0]) - 1][stage_counts[int(temp_arr[0]) - 1]];
-            stage.stage_id = temp_arr[0];
-            stage.pos_x = temp_arr[1];
-            stage.pos_y = temp_arr[2];
-            stage.rest_time = temp_arr[3];
-            stage.material_status = temp_arr[4];
-            stage.product_status = temp_arr[5];
-            stage_counts[int(temp_arr[0]) - 1]++;
-        }
-            // 处理剩余行：机器人
-        else {
-            Robot &robot = map->robot_arr[rows_count - (2 + map->stage_num)];
-            robot.stage_id = temp_arr[0];
-            robot.object_id = temp_arr[1];
-            robot.time_value_coef = temp_arr[2];
-            robot.crash_value_coef = temp_arr[3];
-            robot.v_rad = temp_arr[4];
-            robot.v_x = temp_arr[5];
-            robot.v_y = temp_arr[6];
-            robot.pos_rad = temp_arr[7];
-            robot.pos_x = temp_arr[8];
-            robot.pos_y = temp_arr[9];
-        }
-        rows_count++;
-    }
-}
+
+
+
 
 int main() {
-    // 初始化地图测试
-    FILE *file = fopen("./1.txt", "r");
-    if (!file) {
-        perror("file open error");
-        exit(1);
+     //// 1.本地测试
+     //// 初始化地图测试
+     //Map my_map;
+     //FILE *file = fopen("./1.txt", "r");
+     //if (!file) {
+     //    perror("file open error");
+     //    exit(1);
+     //}
+     //my_map.init_map(file);
+     //fclose(file);
+     //// 刷新地图测试
+     //file = fopen("./IO1.txt", "r");
+     //if (!file) {
+     //    perror("file open error2");
+     //    exit(1);
+     //}
+     //my_map.flush_map(file);
+     //fclose(file);
+     //return 0;
+
+    // 2.线上测试
+    Map my_map;
+    my_map.init_map(stdin);
+    puts("OK");
+    fflush(stdout);
+    int frameID;
+    while (scanf("%d", &frameID) != EOF) {
+        my_map.flush_map(stdin);
+        printf("%d\n", frameID);
+        int lineSpeed = 3;
+        double angleSpeed = 1.5;
+        for (int robotId = 0; robotId < 4; robotId++) {
+            printf("forward %d %d\n", robotId, lineSpeed);
+            printf("rotate %d %f\n", robotId, angleSpeed);
+        }
+        printf("OK\n");
+        fflush(stdout);
     }
-    Map my_map = init_map(file);
-    fclose(file);
-    // 刷新地图测试
-    file = fopen("./IO1.txt", "r");
-    if (!file) {
-        perror("file open error2");
-        exit(1);
-    }
-    flush_map(file, &my_map);
-    fclose(file);
     return 0;
 
 }
