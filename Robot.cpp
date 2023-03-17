@@ -92,3 +92,9 @@ std::istream &operator>>(std::istream &in, Robot &robot) {
        >> robot.v_x >> robot.v_y >> robot.pos_rad >> robot.pos_x >> robot.pos_y;
     return in;
 }
+
+bool Robot::material_exist(Stage &stage) {
+    int s_id = this->task.init_stage_id;
+    int material_tmp = stage.material_status;
+    return ((material_tmp >> s_id) & 1) == 1;
+}

@@ -2,6 +2,13 @@
 
 using namespace std;
 
+void Stage::notify_producer(Producer &p) {
+    //需要合成的物品有更高优先级
+    if (stage_id < 4) return;
+    if (stage_id < 7)p.task_queue.push_front(Task(stage_id, 7));
+    if (stage_id == 7) p.task_queue.push_front(Task(7, 8));
+}
+
 bool Stage::is_raw_material(int object_id) const {
     assert(1 <= object_id && object_id <= 7);
     auto object_ids = get_raw_material_ids();
@@ -11,6 +18,7 @@ bool Stage::is_raw_material(int object_id) const {
     }
     return false;
 }
+
 vector<int> Stage::get_raw_material_ids() const {
     switch (stage_id) {
         case 1:
@@ -61,7 +69,7 @@ int Stage::produce_time() {
     return 1;
 }
 
-void Stage::tick() {
+void Stage::tick(Producer &p) {
     if (rest_time == not_producing) {
         if (is_raw_materials_ready()) {
             material_status = 0; // 产品格清空
@@ -73,6 +81,7 @@ void Stage::tick() {
     if (rest_time == blocking && product_status == 0) {
         rest_time = not_producing;
         product_status = 1;
+        this->notify_producer(p);//通知生产者
     }
 }
 
@@ -84,9 +93,4 @@ int Stage::product_object_id() const {
         return no_object;
 }
 
-void Stage::notify_producer(Producer &p) {
-    //需要合成的物品有更高优先级
-    if (stage_id < 4) return;
-    if (stage_id < 7)p.task_queue.push_front(Task(stage_id, 7));
-    if (stage_id == 7) p.task_queue.push_front(Task(7, 8));
-}
+

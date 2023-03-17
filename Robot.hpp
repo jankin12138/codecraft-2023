@@ -24,6 +24,7 @@ public:
 
     Robot() : id(-1), pos_x(-1), pos_y(-1), stage_id(no_stage), object_id(no_object) {}
 
+
     void print_forward(double v);
 
     void print_rotate(double v);
@@ -33,6 +34,8 @@ public:
     void print_sell();
 
     void print_destroy();
+
+    bool material_exist(Stage &stage);
 
     void go_to_stage(Stage &stage);
 

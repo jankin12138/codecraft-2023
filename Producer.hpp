@@ -6,6 +6,11 @@
 
 class Producer {
 public:
-    Task get_task();//获取目标工作台任务
+    Task creat_task();//获取目标工作台任务
     std::deque<Task> task_queue;//目标工作台任务队列
+};
+
+class Consumer {
+    Task get_task(Producer& p);
+    std::deque<Task> task_queue;
 };

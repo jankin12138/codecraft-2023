@@ -31,5 +31,5 @@ public:
     int produce_time();
 
     /// 每帧调用
-    void tick();
+    void tick(Producer &p);
 };

@@ -1,4 +1,5 @@
 #pragma once
+
 #include <cmath>
 #include <string.h>
 #include <stdlib.h>
@@ -14,9 +15,9 @@ inline double distance(double x1, double y1, double x2, double y2) {
 }
 
 // 子函数：处理char型数组，按照空格切割并翻译为浮点数
-inline void parse_char(char* line, double* temp_arr) {
+inline void parse_char(char *line, double *temp_arr) {
     char delims[] = " ";
-    char* temp = NULL;
+    char *temp = NULL;
     temp = strtok(line, delims);
     int i = 0;
     while (temp != NULL) {

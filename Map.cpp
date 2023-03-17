@@ -2,7 +2,7 @@
 #include "util.hpp"
 
 // 从地图读取数据：从本地文件刷新Map,提交代码需要从stdin初始化
-void Map::init_map(FILE* file) {
+void Map::init_map(FILE *file) {
     char line[1024];
     int robot_count = 0;
     int stage_count = 0;
@@ -21,9 +21,9 @@ void Map::init_map(FILE* file) {
                 robot_arr[robot_count].pos_y = 50.0 - (rows_count + 1) * 0.5;
                 robot_count++;
             }
-            // 初始化工作台
+                // 初始化工作台
             else if (line[i] >= '1' && line[i] <= '9') {
-                Stage tempstage = { int(line[i] - '0'), (i + 1) * 0.5, 50.0 - (rows_count + 1) * 0.5, -1, 0, 0 };
+                Stage tempstage = {int(line[i] - '0'), (i + 1) * 0.5, 50.0 - (rows_count + 1) * 0.5, -1, 0, 0};
                 stage_arr[int(line[i] - '1')].push_back(tempstage);
                 stage_count++;
             }
@@ -35,10 +35,10 @@ void Map::init_map(FILE* file) {
 
 
 // 从每一帧刷新数据：从本地文件初始化Map,提交代码需要从stdin初始化
-void Map::flush_map(FILE* file) {
+void Map::flush_map(FILE *file) {
     char line[1024];
     int rows_count = 0;          // 帧结构行数计数
-    int stage_counts[9] = { 0 }; // 工作台各类型数量计数
+    int stage_counts[9] = {0}; // 工作台各类型数量计数
     double temp_arr[10];         // 开辟解析数据用的临时空间
     //while (fgets(line, sizeof line, stdin)) {
     while (fgets(line, sizeof line, file)) {
@@ -51,14 +51,13 @@ void Map::flush_map(FILE* file) {
             frame = temp_arr[0];
             money = temp_arr[1];
         }
-        // 处理第二行-1+map->stage_num：工作台
+            // 处理第二行-1+map->stage_num：工作台
         else if (rows_count == 1) {
             parse_char(line, temp_arr);
             stage_num = temp_arr[0];
-        }
-        else if (rows_count <= 1 + stage_num) {
+        } else if (rows_count <= 1 + stage_num) {
             parse_char(line, temp_arr);
-            Stage& stage = stage_arr[int(temp_arr[0]) - 1][stage_counts[int(temp_arr[0]) - 1]];  // 获取需要刷新的工作台
+            Stage &stage = stage_arr[int(temp_arr[0]) - 1][stage_counts[int(temp_arr[0]) - 1]];  // 获取需要刷新的工作台
             stage.stage_id = temp_arr[0];
             stage.pos_x = temp_arr[1];
             stage.pos_y = temp_arr[2];
@@ -67,9 +66,9 @@ void Map::flush_map(FILE* file) {
             stage.product_status = temp_arr[5];
             stage_counts[int(temp_arr[0]) - 1]++;
         }
-        // 处理剩余行：机器人
+            // 处理剩余行：机器人
         else {
-            Robot& robot = robot_arr[rows_count - (2 + stage_num)]; // 获取需要刷新的机器人
+            Robot &robot = robot_arr[rows_count - (2 + stage_num)]; // 获取需要刷新的机器人
             robot.stage_id = temp_arr[0];
             robot.object_id = temp_arr[1];
             robot.time_value_coef = temp_arr[2];
