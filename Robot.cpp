@@ -102,12 +102,6 @@ std::istream &operator>>(std::istream &in, Robot &robot) {
     return in;
 }
 
-bool Robot::material_exist(Stage &stage) {
-    int s_id = this->task.init_stage_id;
-    int material_tmp = stage.material_status;
-    return ((material_tmp >> s_id) & 1) == 1;
-}
-
 void Robot::RcvTask(const Task &task) {
     todo.push_back(Action(ActionType::Goto, task.from_stage));
     todo.push_back(Action(ActionType::Buy, task.from_stage));

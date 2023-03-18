@@ -17,6 +17,7 @@ public:
     int rest_time;  // 剩余生产时间, -1表示不在生产, 0表示生产因输出格满而阻塞, >=0表示剩余生产帧数
     int material_status;    // 原材料格状态,位表表示
     int product_status;     // 产品格状态, 0为无, 1为有
+    int count = 0; //已经生产的个数用于判断分配给哪个工作台
     void notify_producer(Producer &p);  // 工作台完成创建后调用此函数通知生产者
     int product_object_id() const;      // 生产物品id
     bool is_raw_material(int object_id) const;

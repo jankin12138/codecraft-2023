@@ -4,9 +4,9 @@ using namespace std;
 
 void Stage::notify_producer(Producer &p) {
     //需要合成的物品有更高优先级
-    if (stage_id < 4) return;
-    if (stage_id < 7)p.task_queue.push_front(Task(stage_id, 7));
-    if (stage_id == 7) p.task_queue.push_front(Task(7, 8));
+    Task a;
+    a.to_stage = this;
+    if (stage_id <= 7)p.task_queue.push_front(a);
 }
 
 bool Stage::is_raw_material(int object_id) const {
@@ -81,6 +81,7 @@ void Stage::tick(Producer &p) {
     if (rest_time == blocking && product_status == 0) {
         rest_time = not_producing;
         product_status = 1;
+        this->count++;
         this->notify_producer(p);//通知生产者
     }
 }

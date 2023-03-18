@@ -50,7 +50,7 @@ public:
 
     void print_destroy();
 
-    bool material_exist(Stage &stage);
+
 
     void buy(Stage &stage);
 

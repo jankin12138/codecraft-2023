@@ -12,12 +12,6 @@ namespace {
 
 //生产者创建任务队列
 Task Producer::creat_task() {
-    if (task_queue.empty()) {
-        //按固定顺序放入任务队列
-        for (auto ans: ans_task) {
-            task_queue.emplace_back(Task(ans[0], ans[1]));
-        }
-    }
     Task res = task_queue.front();
     task_queue.pop_front();
     return res;
