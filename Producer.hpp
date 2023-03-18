@@ -10,7 +10,3 @@ public:
     std::deque<Task> task_queue;//目标工作台任务队列
 };
 
-class Consumer {
-    Task get_task(Producer& p);
-    std::deque<Task> task_queue;
-};

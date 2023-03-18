@@ -45,25 +45,25 @@ void find_nearest_pos(Map &map, Robot &robot, bool flag) {
 
 
 int main() {
-    //// 1.本地测试
-    //// 初始化地图测试
-//     Map my_map;
-//     FILE *file = fopen("./1.txt", "r");
-//     if (!file) {
-//         perror("file open error");
-//         exit(1);
-//     }
-//     my_map.init_map(file);
-//     fclose(file);
-//     // 刷新地图测试
-//     file = fopen("./IO1.txt", "r");
-//     if (!file) {
-//         perror("file open error2");
-//         exit(1);
-//     }
-//     my_map.flush_map(file);
-//     fclose(file);
-//     return 0;
+    // 1.本地测试
+    // 初始化地图测试
+     Map my_map;
+     FILE *file = fopen("../1.txt", "r");
+     if (!file) {
+         perror("file open error");
+         exit(1);
+     }
+     my_map.init_map(file);
+     fclose(file);
+     // 刷新地图测试
+     file = fopen("../IO1.txt", "r");
+     if (!file) {
+         perror("file open error2");
+         exit(1);
+     }
+     my_map.flush_map(file);
+     fclose(file);
+     return 0;
 
     // 2.线上测试
 //    Map my_map;
@@ -83,6 +83,6 @@ int main() {
 //        printf("OK\n");
 //        fflush(stdout);
 //    }
-    return 0;
+//    return 0;
 
 }
