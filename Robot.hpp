@@ -19,11 +19,26 @@ public:
     double pos_y;//y坐标
     bool is_busy;//空闲状态
     int id; // 机器人id[0, 3], 目前一共只有4个机器人
-    Stage *target_stage;
     Task task;//当前执行的任务
 
     Robot() : id(-1), pos_x(-1), pos_y(-1), stage_id(no_stage), object_id(no_object) {}
 
+    enum class ActionType {
+        Goto,
+        Buy,
+        Sell
+    };
+
+    class Action {
+    public:
+        ActionType actionType;
+        Stage *stage;
+
+        Action(ActionType actionType, Stage *stage) : actionType(actionType), stage(stage) {}
+    };
+
+    std::vector<Action> todo;
+    Action *doing;
 
     void print_forward(double v);
 
@@ -37,13 +52,13 @@ public:
 
     bool material_exist(Stage &stage);
 
-    void go_to_stage(Stage &stage);
+    void buy(Stage &stage);
 
-    void buy();
-
-    void sell();
+    void sell(Stage &stage);
 
     void destroy();
+
+    void RcvTask(Task const &task);
 
     /// 每帧调用，生成机器人行为对应输出
     void tick();

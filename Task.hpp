@@ -1,13 +1,11 @@
 #pragma once
 
+#include "Stage.hpp"
+
 class Task {
 public:
-    Task() {};
+    Task(Stage &from_stage, Stage &to_stage) : from_stage(from_stage), to_stage(to_stage) {}
 
-    Task(int a, int b);
-
-    int init_stage_id;  // 获取物品工作台类型
-    int target_stage_id;// 出售物品工作台类型
-    double target_x;    // 目标工作台x坐标
-    double target_y;    // 目标工作台y坐标
+    Stage &from_stage;
+    Stage &to_stage;
 };
