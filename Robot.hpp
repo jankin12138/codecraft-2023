@@ -1,9 +1,12 @@
 #pragma once
 
 #include <iostream>
+#include <vector>
 
-#include "Stage.hpp"
 #include "Task.hpp"
+#include "util.hpp"
+
+class Stage;
 
 class Robot {
 public:
@@ -49,8 +52,6 @@ public:
     void print_sell();
 
     void print_destroy();
-
-
 
     void buy(Stage &stage);
 

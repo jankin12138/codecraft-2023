@@ -3,9 +3,11 @@
 #include <cassert>
 #include <vector>
 
-#include "Producer.hpp"
-#include "Stage.hpp"
 #include "util.hpp"
+
+class Stage;
+
+class Producer;
 
 class Stage {
 public:

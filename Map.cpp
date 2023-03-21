@@ -1,5 +1,6 @@
 #include "Map.hpp"
 #include "util.hpp"
+#include "Stage.hpp"
 
 // 从地图读取数据：从本地文件刷新Map,提交代码需要从stdin初始化
 void Map::init_map(FILE *file) {

@@ -1,4 +1,6 @@
 #include "Stage.hpp"
+#include "Producer.hpp"
+#include "Task.hpp"
 
 using namespace std;
 
@@ -39,6 +41,7 @@ vector<int> Stage::get_raw_material_ids() const {
             return {1, 2, 3, 4, 5, 6, 7};
         default:
             assert(false);
+            return {};
     }
 }
 

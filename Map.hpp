@@ -1,9 +1,11 @@
 #pragma once
 
 #include <vector>
+#include <cstdio>
 
 #include "Robot.hpp"
-#include "Stage.hpp"
+
+class Stage;
 
 class Map {
 public:

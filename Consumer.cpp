@@ -1,4 +1,9 @@
 #include "Consumer.hpp"
+#include "Robot.hpp"
+#include "Map.hpp"
+#include "Stage.hpp"
+#include "Task.hpp"
+#include "Producer.hpp"
 
 Task Consumer::get_task(Producer &p,Map &map, Robot &robot) {
     Task tmp = p.creat_task();
@@ -15,13 +20,13 @@ bool Consumer::material_exist(Stage &stage) {
     return ((material_tmp >> s_id) & 1) == 1;
 }
 
-//ÕÒµ½×î½üµÄ³öÊÛÄ¿±êµã
+//ï¿½Òµï¿½ï¿½ï¿½ï¿½ï¿½Ä³ï¿½ï¿½ï¿½Ä¿ï¿½ï¿½ï¿½
 Stage* Consumer::find_nearest_pos(Map &map,Stage* from_stage) {
     int target_stage_id;
     Stage* res;
     double dis;
     double min_distance = INT32_MAX;
-    //ÎªÕæÊÇ»ñÈ¡ÎïÆ·Î»ÖÃ£¬Îª¼ÙÊÇ³öÊÛÎ»ÖÃ
+    //Îªï¿½ï¿½ï¿½Ç»ï¿½È¡ï¿½ï¿½Æ·Î»ï¿½Ã£ï¿½Îªï¿½ï¿½ï¿½Ç³ï¿½ï¿½ï¿½Î»ï¿½ï¿½
     if (from_stage->count % 2) {
         switch (from_stage->stage_id) {
             case 1:
@@ -72,11 +77,11 @@ Stage* Consumer::find_nearest_pos(Map &map,Stage* from_stage) {
         }
     }
     for (auto arr: map.stage_arr[target_stage_id]) {
-        //ÅÐ¶ÏÄ¿±ê¹¤×÷Ì¨Ô­ÁÏ¸ñÊÇ·ñ±»Õ¼ÓÃ
+        //ï¿½Ð¶ï¿½Ä¿ï¿½ê¹¤ï¿½ï¿½Ì¨Ô­ï¿½Ï¸ï¿½ï¿½Ç·ï¿½Õ¼ï¿½ï¿½
         if (material_exist(arr)) {
             continue;
         }
-        //¼ÆËã·ûºÏÌõ¼þµÄ×î½üµÄ¾àÀë
+        //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¾ï¿½ï¿½ï¿½
         dis = distance(from_stage->pos_x, from_stage->pos_y, arr.pos_x, arr.pos_y);
         if (dis < min_distance) {
             min_distance = dis;

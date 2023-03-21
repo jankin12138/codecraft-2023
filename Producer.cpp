@@ -1,4 +1,5 @@
 #include "Producer.hpp"
+#include "Task.hpp"
 
 namespace {
 //常量区

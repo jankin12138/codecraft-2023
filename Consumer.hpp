@@ -2,8 +2,11 @@
 
 #include <deque>
 
-#include "Robot.hpp"
-#include "Map.hpp"
+class Task;
+class Robot;
+class Map;
+class Producer;
+class Stage;
 
 class Consumer {
     Task get_task(Producer &p,Map &map, Robot &robot);

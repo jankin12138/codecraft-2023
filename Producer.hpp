@@ -2,7 +2,8 @@
 
 #include <queue>
 
-#include "Task.hpp"
+class Task;
+
 
 class Producer {
 public:

@@ -1,5 +1,6 @@
 #include "Robot.hpp"
 #include "util.hpp"
+#include "Stage.hpp"
 
 using namespace std;
 
