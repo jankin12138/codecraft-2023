@@ -147,12 +147,12 @@ int main() {
         //4.消费者分配任务
         //5.机器人执行任务
         for (int robotId = 0; robotId < 4; robotId++) {
-            if (!my_producer.task_queue.empty()) {
+            if (!my_producer.is_empty()) {
                 Robot &select_robot = my_map.robot_arr[robotId];
                 //5.1 空闲机器人向Consumer申请任务
                 if (select_robot.is_busy()) {
-                    Task todo_task = my_consumer.get_task(my_producer, my_map, select_robot);
-                    select_robot.rcv_task(todo_task);
+                    Task* todo_task = my_consumer.get_task(my_producer, my_map, select_robot);
+                    select_robot.rcv_task(*todo_task);
                 }
                 //fprintf(stderr, "frameID: %d,robotId: %d\n", frameID, robotId);// 用于定位问题
                 select_robot.tick();

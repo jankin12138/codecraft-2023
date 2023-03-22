@@ -6,9 +6,9 @@
 #include "Producer.hpp"
 
 // Consumer匹配任务+获取任务，优化：耦合严重，后期需要拆分为两个函数
-Task Consumer::get_task(Producer &p,Map &map, Robot &robot) {
-    Task tmp = p.get_task_front();
-    tmp.to_stage = find_nearest_pos(map,tmp.from_stage);
+Task *Consumer::get_task(Producer &p, Map &map, Robot &robot) {
+    Task *tmp = p.get_task_front();
+    tmp->to_stage = find_nearest_pos(map, tmp->from_stage);
 //    this->task_queue.push_back(tmp);    // 从producer取队头任务（from_stage）放在consumer队尾（匹配to_stage后的任务）
 //    Task res = this->task_queue.front();// 获取consumer的一个队头任务
 //    this->task_queue.pop_front();
@@ -22,9 +22,9 @@ bool Consumer::material_exist(Stage &stage) {
 }
 
 //找到当前工作台的任务的最近关联工作台
-Stage* Consumer::find_nearest_pos(Map &map,Stage* from_stage) {
+Stage *Consumer::find_nearest_pos(Map &map, Stage *from_stage) {
     int target_stage_id;
-    Stage* res; // 找到当前工作台的任务的最近关联工作台
+    Stage *res; // 找到当前工作台的任务的最近关联工作台
     double dis; // 初始化存储dis
     double min_distance = INT32_MAX;
     // 保证产生任务的平衡（例如1->{4,5}）

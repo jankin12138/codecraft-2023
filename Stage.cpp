@@ -6,9 +6,12 @@ using namespace std;
 
 void Stage::notify_producer(Producer &p) {
     //需要合成的物品有更高优先级
-    Task a;
-    a.from_stage = this;
-    if (stage_id <= 7)p.task_queue.push_front(a);
+    Task *a = new(Task);
+    a->from_stage = this;
+    if (stage_id <= 7) {
+        p.stage_id_ans[stage_id]++;
+        p.task_map[this] = a;
+    }
 }
 
 bool Stage::is_raw_material(int object_id) const {
