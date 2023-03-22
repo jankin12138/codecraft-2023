@@ -7,7 +7,7 @@ using namespace std;
 void Stage::notify_producer(Producer &p) {
     //需要合成的物品有更高优先级
     Task a;
-    a.to_stage = this;
+    a.from_stage = this;
     if (stage_id <= 7)p.task_queue.push_front(a);
 }
 

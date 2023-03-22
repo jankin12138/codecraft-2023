@@ -11,6 +11,7 @@ class Producer;
 
 class Stage {
 public:
+    int stage_sn;   // 工作台编号，按行扫描得到的编号
     int stage_id;   // 工作台类型
     double pos_x;   // x坐标
     double pos_y;   // y坐标

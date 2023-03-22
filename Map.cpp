@@ -24,7 +24,7 @@ void Map::init_map(FILE *file) {
             }
                 // 初始化工作台
             else if (line[i] >= '1' && line[i] <= '9') {
-                Stage tempstage = {int(line[i] - '0'), (i + 1) * 0.5, 50.0 - (rows_count + 1) * 0.5, -1, 0, 0};
+                Stage tempstage = {stage_count,int(line[i] - '0'), (i + 1) * 0.5, 50.0 - (rows_count + 1) * 0.5, -1, 0, 0};
                 stage_arr[int(line[i] - '1')].push_back(tempstage);
                 stage_count++;
             }
@@ -59,6 +59,7 @@ void Map::flush_map(FILE *file) {
         } else if (rows_count <= 1 + stage_num) {
             parse_char(line, temp_arr);
             Stage &stage = stage_arr[int(temp_arr[0]) - 1][stage_counts[int(temp_arr[0]) - 1]];  // 获取需要刷新的工作台
+            stage.stage_sn = rows_count-2;
             stage.stage_id = temp_arr[0];
             stage.pos_x = temp_arr[1];
             stage.pos_y = temp_arr[2];

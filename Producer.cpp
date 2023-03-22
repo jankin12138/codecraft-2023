@@ -1,6 +1,6 @@
 #include "Producer.hpp"
 #include "Task.hpp"
-
+class Task;
 namespace {
 //常量区
     const int ans_task[6][2] = {{3, 6},
@@ -12,7 +12,7 @@ namespace {
 }
 
 //生产者创建任务队列
-Task Producer::creat_task() {
+Task Producer::get_task_front() {
     Task res = task_queue.front();
     task_queue.pop_front();
     return res;
