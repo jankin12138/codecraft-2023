@@ -64,7 +64,8 @@ void Robot::tick() {
     if (doing == nullptr) {
         if (todo.empty())
             return;
-        doing = &todo.front();
+        auto temp = todo.front();
+        doing = &temp;
         todo.erase(todo.begin());
     }
     Stage &stage = *doing->stage;
@@ -74,7 +75,7 @@ void Robot::tick() {
         case ActionType::Goto:
             target_rad = atan((stage.pos_y - pos_y) / (stage.pos_x - pos_x));
             dist_rad = target_rad - pos_rad;
-            if (dist_rad >= 1e-4/*允许角度偏差*/) {
+            if (dist_rad) {
                 // 转动
                 if (dist_rad > 0)
                     print_rotate(min(pi, dist_rad / seconds_per_frame));
@@ -89,16 +90,13 @@ void Robot::tick() {
                 // 已到达目标工作台附近
                 print_forward(0);
                 print_rotate(0);
-                doing = nullptr;
             }
             break;
         case ActionType::Buy:
             buy(stage);
-            doing = nullptr;
             break;
         case ActionType::Sell:
             sell(stage);
-            doing = nullptr;
             break;
         default:
             assert(false);

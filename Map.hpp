@@ -17,5 +17,5 @@ public:
     Robot robot_arr[4];//机器人序列
 
     void init_map(FILE *file);       // 初始化地图
-    void flush_map(FILE *file);//刷新地图
+    void flush_map(FILE *file,int frameID);//刷新地图
 };

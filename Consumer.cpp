@@ -9,10 +9,10 @@
 Task Consumer::get_task(Producer &p,Map &map, Robot &robot) {
     Task tmp = p.get_task_front();
     tmp.to_stage = find_nearest_pos(map,tmp.from_stage);
-    this->task_queue.push_back(tmp);    // 从producer取队头任务（from_stage）放在consumer队尾（匹配to_stage后的任务）
-    Task res = this->task_queue.front();// 获取consumer的一个队头任务
-    this->task_queue.pop_front();
-    return res;
+//    this->task_queue.push_back(tmp);    // 从producer取队头任务（from_stage）放在consumer队尾（匹配to_stage后的任务）
+//    Task res = this->task_queue.front();// 获取consumer的一个队头任务
+//    this->task_queue.pop_front();
+    return tmp;
 }
 
 bool Consumer::material_exist(Stage &stage) {

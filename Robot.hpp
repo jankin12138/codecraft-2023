@@ -24,7 +24,8 @@ public:
     Task task;//当前执行的任务
     bool is_busy();//空闲状态
 
-    Robot() : id(-1), pos_x(-1), pos_y(-1), stage_id(no_stage), object_id(no_object) {}
+    Robot() : stage_id(no_stage), object_id(no_object),time_value_coef(1), crash_value_coef(1),
+              v_rad(0),v_x(0),v_y(0),pos_rad(0),pos_x(-1), pos_y(-1),id(-1){}
 
     enum class ActionType {
         Goto,
@@ -41,7 +42,7 @@ public:
     };
 
     std::vector<Action> todo;
-    Action *doing;
+    Action *doing = NULL;
 
     void print_forward(double v);
 

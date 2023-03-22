@@ -119,7 +119,7 @@ using namespace std;
 int main() {
     // 初始化成员函数
     Sleep(10 * 1000);
-    perror("Tag3");
+    perror("Tag4");
     Producer my_producer;
     Consumer my_consumer;
     Map my_map;
@@ -134,7 +134,7 @@ int main() {
     while (scanf("%d", &frameID) != EOF) {
         printf("%d\n", frameID);
         //1.刷新地图数据
-        my_map.flush_map(stdin);
+        my_map.flush_map(stdin, frameID);
 
         //2.生产者产生任务
         //3.工作台产生任务
@@ -149,8 +149,12 @@ int main() {
         for (int robotId = 0; robotId < 4; robotId++) {
             if (!my_producer.task_queue.empty()) {
                 Robot &select_robot = my_map.robot_arr[robotId];
-                Task todo_task = my_consumer.get_task(my_producer, my_map, select_robot);
-                select_robot.rcv_task(todo_task);
+                //5.1 空闲机器人向Consumer申请任务
+                if (select_robot.is_busy()) {
+                    Task todo_task = my_consumer.get_task(my_producer, my_map, select_robot);
+                    select_robot.rcv_task(todo_task);
+                }
+                fprintf(stderr, "frameID: %d,robotId: %d\n", frameID, robotId);// 用于定位问题
                 select_robot.tick();
             }
         }
