@@ -56,8 +56,12 @@ void Robot::destroy() {
     print_destroy();
 }
 
+bool Robot::is_busy() {
+    return doing == nullptr && todo.empty();
+}
+
 void Robot::tick() {
-    if (!is_busy) {
+    if (doing == nullptr) {
         if (todo.empty())
             return;
         doing = &todo.front();
@@ -83,7 +87,6 @@ void Robot::tick() {
                 print_forward(min(6.0, dist / seconds_per_frame));
             } else {
                 // 已到达目标工作台附近
-                is_busy = false;
                 print_forward(0);
                 print_rotate(0);
             }
@@ -94,6 +97,8 @@ void Robot::tick() {
         case ActionType::Sell:
             sell(stage);
             break;
+        default:
+            assert(false);
     }
 }
 

@@ -20,9 +20,9 @@ public:
     double pos_rad;//朝向
     double pos_x;//x坐标
     double pos_y;//y坐标
-    bool is_busy;//空闲状态
     int id; // 机器人id[0, 3], 目前一共只有4个机器人
     Task task;//当前执行的任务
+    bool is_busy();//空闲状态
 
     Robot() : id(-1), pos_x(-1), pos_y(-1), stage_id(no_stage), object_id(no_object) {}
 
