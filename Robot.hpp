@@ -41,7 +41,7 @@ public:
         Action(ActionType actionType, Stage *stage) : actionType(actionType), stage(stage) {}
     };
 
-    std::vector<Action> todo;
+    std::queue<Action> todo;
     Action *doing = NULL;
 
     void print_forward(double v);

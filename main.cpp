@@ -154,7 +154,7 @@ int main() {
                     Task todo_task = my_consumer.get_task(my_producer, my_map, select_robot);
                     select_robot.rcv_task(todo_task);
                 }
-                fprintf(stderr, "frameID: %d,robotId: %d\n", frameID, robotId);// 用于定位问题
+                //fprintf(stderr, "frameID: %d,robotId: %d\n", frameID, robotId);// 用于定位问题
                 select_robot.tick();
             }
         }
