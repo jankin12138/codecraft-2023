@@ -59,7 +59,7 @@ public:
 
     void destroy();
 
-    void RcvTask(Task const &task);
+    void rcv_task(Task const &task);
 
     /// 每帧调用，生成机器人行为对应输出
     void tick();

@@ -103,7 +103,7 @@ std::istream &operator>>(std::istream &in, Robot &robot) {
     return in;
 }
 
-void Robot::RcvTask(const Task &task) {
+void Robot::rcv_task(const Task &task) {
     todo.push_back(Action(ActionType::Goto, task.from_stage));
     todo.push_back(Action(ActionType::Buy, task.from_stage));
     todo.push_back(Action(ActionType::Goto, task.to_stage));
