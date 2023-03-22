@@ -64,9 +64,8 @@ void Robot::tick() {
     if (doing == nullptr) {
         if (todo.empty())
             return;
-        auto temp = todo.front();
-        doing = &temp;
-        todo.erase(todo.begin());
+        doing = &todo.front();
+        todo.pop();
     }
     Stage &stage = *doing->stage;
     double dist = distance(pos_x, pos_y, stage.pos_x, stage.pos_y);
@@ -110,8 +109,8 @@ std::istream &operator>>(std::istream &in, Robot &robot) {
 }
 
 void Robot::rcv_task(const Task &task) {
-    todo.push_back(Action(ActionType::Goto, task.from_stage));
-    todo.push_back(Action(ActionType::Buy, task.from_stage));
-    todo.push_back(Action(ActionType::Goto, task.to_stage));
-    todo.push_back(Action(ActionType::Sell, task.to_stage));
+    todo.push(Action(ActionType::Goto, task.from_stage));
+    todo.push(Action(ActionType::Buy, task.from_stage));
+    todo.push(Action(ActionType::Goto, task.to_stage));
+    todo.push(Action(ActionType::Sell, task.to_stage));
 }
