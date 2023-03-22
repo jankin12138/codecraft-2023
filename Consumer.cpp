@@ -7,7 +7,7 @@
 
 // Consumer匹配任务+获取任务，优化：耦合严重，后期需要拆分为两个函数
 Task *Consumer::get_task(Producer &p, Map &map, Robot &robot) {
-    Task *tmp = p.get_task_front();
+    Task *tmp = p.get_task();
     tmp->to_stage = find_nearest_pos(map, tmp->from_stage);
 //    this->task_queue.push_back(tmp);    // 从producer取队头任务（from_stage）放在consumer队尾（匹配to_stage后的任务）
 //    Task res = this->task_queue.front();// 获取consumer的一个队头任务

@@ -11,7 +11,7 @@ class Stage;
 
 class Producer {
 public:
-    Task *get_task_front();      //获取目标工作台任务，主要调度逻辑函数
+    Task *get_task();      //获取目标工作台任务，主要调度逻辑函数
     std::unordered_map<Stage *, Task *> task_map;//目标工作台哈希map
     bool is_empty();
 

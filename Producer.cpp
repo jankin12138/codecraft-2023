@@ -14,7 +14,7 @@ namespace {
 }
 
 //
-
+//去哈希表查找对应stage_id的Stage
 Task *find_stage_id(std::unordered_map<Stage *, Task *> &task_map, int stage_id) {
     Task *res = nullptr;
     for (auto a: task_map) {
@@ -27,7 +27,8 @@ Task *find_stage_id(std::unordered_map<Stage *, Task *> &task_map, int stage_id)
     return res;
 }
 
-Task *Producer::get_task_front() {
+//均衡获取任务，7大于4、5、6大于1、2、3（主要调度逻辑函数）
+Task *Producer::get_task() {
     Task *tmp = nullptr;
 
     if (stage_id_ans[7] != 0) {
@@ -61,7 +62,7 @@ Task *Producer::get_task_front() {
     }
     return tmp;
 }
-
+//判断任务是否为空
 bool Producer::is_empty() {
     for (int i = 0; i < 10; i++) {
         if (count_task_ans[i] != 0) return false;
