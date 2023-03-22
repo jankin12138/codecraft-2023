@@ -112,7 +112,7 @@ std::istream &operator>>(std::istream &in, Robot &robot) {
 }
 
 void Robot::rcv_task(const Task &task) {
-    todo.push(Action(ActionType::Goto, task.from_stage));
+    todo.push(Action(ActionType::Goto, task.from_stage));//定位：此处发生篡改？？？？？？？？
     todo.push(Action(ActionType::Buy, task.from_stage));
     todo.push(Action(ActionType::Goto, task.to_stage));
     todo.push(Action(ActionType::Sell, task.to_stage));

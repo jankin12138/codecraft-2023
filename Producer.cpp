@@ -45,6 +45,7 @@ Task *Producer::get_task() {
                 tmp = find_stage_id(task_map, a[0]);
                 stage_id_ans[a[0]]--;
                 count_task_ans[a[0]]++;
+                break;
             }
         }
     } else if (stage_id_ans[1] != 0 || stage_id_ans[2] != 0 || stage_id_ans[3] != 0) {
@@ -54,9 +55,10 @@ Task *Producer::get_task() {
         sort(tmp_ans.begin(), tmp_ans.end());
         for (auto a: tmp_ans) {
             if (stage_id_ans[a[0]] != 0) {
-                tmp = find_stage_id(task_map, a[0]);
+                tmp = find_stage_id(task_map, a[0]);//查询其实就是找到一个创建好的任务，等同于在此处创建任务
                 stage_id_ans[a[0]]--;
                 count_task_ans[a[0]]++;
+                break;
             }
         }
     }
@@ -65,7 +67,7 @@ Task *Producer::get_task() {
 //判断任务是否为空
 bool Producer::is_empty() {
     for (int i = 0; i < 10; i++) {
-        if (count_task_ans[i] != 0) return false;
+        if (stage_id_ans[i] != 0) return false;
     }
     return true;
 }

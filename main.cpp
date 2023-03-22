@@ -153,6 +153,8 @@ int main() {
                 if (select_robot.is_busy()) {
                     Task* todo_task = my_consumer.get_task(my_producer, my_map, select_robot);
                     select_robot.rcv_task(*todo_task);
+                    fprintf(stderr, "from_stage: %d,to_stage: %d\n", todo_task->from_stage->stage_id, todo_task->to_stage->stage_id);// 用于定位问题
+                    fprintf(stderr, "(%f %f),(%f %f)\n",  todo_task->from_stage->pos_x,todo_task->from_stage->pos_y,todo_task->to_stage->pos_x,todo_task->to_stage->pos_y);
                 }
                 //fprintf(stderr, "frameID: %d,robotId: %d\n", frameID, robotId);// 用于定位问题
                 select_robot.tick();
