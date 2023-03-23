@@ -83,15 +83,51 @@ double Robot::delta_v_max() {
 }
 
 double Robot::delta_v_rad_max() {
-    constexpr static double delta_v_rad_max_with_obj = 50 / (0.5 * 20 * 0.53 * 0.53 * 0.53);
-    constexpr static double delta_v_rad_max_without_obj = 50 / (0.5 * 20 * 0.45 * 0.45 * 0.45);
+    constexpr static double delta_v_rad_max_with_obj = 50 / (0.5 * 20 * 0.53 * 0.53 * 0.53* 50) ;//0.67rad/s(38度/s)
+    constexpr static double delta_v_rad_max_without_obj = 50 / (0.5 * 20 * 0.45 * 0.45 * 0.45* 50);//1.09rad/s(62度/s)
     return object_id == no_object ? delta_v_rad_max_without_obj : delta_v_rad_max_with_obj;
 }
 
-double Robot::calc_v_rad(double target_rad) {
-    // 简便起见，只考虑逆时针旋转
-    double dist_rad = target_rad - pos_rad;
-    double target_v_rad = dist_rad / seconds_per_frame;
+// 矢量角度
+double Robot::calc_vector_rad(double x,double y) {
+    if (y>0){
+        if (x<0){
+            return atan(y / x)+pi;
+        }else{
+            return atan(y / x);
+        }
+    }else{
+
+        if (x<0){
+            return atan(y / x)-pi;
+        }else{
+            return atan(y / x);
+        }
+
+    }
+}
+double Robot::calc_v_rad(double dist_rad,double v_rad) {
+    double target_v_rad;
+    // 通过判断v_rad防止死锁
+    if (dist_rad<0){
+        if (v_rad<0){
+            target_v_rad =  -(2*pi+dist_rad) / seconds_per_frame;    // 逆时针；
+        }else {
+            target_v_rad =  -dist_rad / seconds_per_frame;   // 顺时针；
+        }
+    }else{
+        if (v_rad<0){
+            target_v_rad = -dist_rad / seconds_per_frame;   // 逆时针；
+        }else {
+            target_v_rad =  (2*pi-dist_rad) / seconds_per_frame;    //顺时针；
+        }
+    }
+    // 弧度限制
+    if (target_v_rad<-delta_v_rad_max()){
+        target_v_rad =-delta_v_rad_max();
+    }else if(target_v_rad>delta_v_rad_max()){
+        target_v_rad = delta_v_rad_max();
+    }
     return target_v_rad;
 }
 
@@ -107,41 +143,30 @@ void Robot::tick() {
     }
     Stage &stage = *doing->stage;
     double dist = distance(pos_x, pos_y, stage.pos_x, stage.pos_y);
-    double dist_x = stage.pos_x - pos_x, dist_y = stage.pos_y - pos_y;
     double target_rad, dist_rad;
     switch (doing->actionType) {
         case ActionType::Goto:
-            if (dist < operate_distance && v_x == 0 && v_y == 0) {
-                if (v_rad)
-                    print_rotate(0);
-                else
-                    doing = nullptr;
-            }
-            target_rad = atan((stage.pos_y - pos_y) / (stage.pos_x - pos_x));
-            if (dist_x < 0)
-                target_rad += pi;
-            dist_rad = target_rad - pos_rad;
-            if (fabs(dist_rad) > 1e-2/*允许角度偏差*/) {
-                // 先停止前进再转动
-                if (v_x || v_y) {
+            target_rad = calc_vector_rad((stage.pos_x - pos_x),(stage.pos_y - pos_y));
+            // cerr<<atan2((stage.pos_y - pos_y),(stage.pos_x - pos_x))<<"\n"; // 我就是傻逼，现成的函数不知道用
+            dist_rad = usermod(target_rad) - usermod(pos_rad);
+            if (dist < operate_distance) {
+                // 1.如果到达目标工作台附近
+                print_rotate(0);
+                print_forward(0);
+                doing = nullptr;
+            } else {
+                // 2.如果距离工作台存在距离
+                // 2.1先对准角度(大角度对准) 大约5度误差
+                if (fabs(dist_rad) > 0.1/*允许角度偏差*/) {
+                    double todo_v_rad = calc_v_rad(dist_rad,v_rad);
+                    print_rotate(todo_v_rad);
                     print_forward(0);
-                    print_rotate(0);
                 } else {
-                    print_rotate(calc_v_rad(target_rad));
-                }
-            } else if (dist >= operate_distance) {
-                // 先停止转动再前进
-                if (v_rad) {
-                    print_forward(0);
-                    print_rotate(0);
-                } else {
+                    // 2.2再走直线（小角度修正5度误差）
+                    double todo_v_rad = calc_v_rad(dist_rad,v_rad);
+                    print_rotate(todo_v_rad/15);  //大约是62/15一帧，面向场景可以再调低点
                     print_forward(min(6.0, dist / seconds_per_frame));
                 }
-            } else {
-                // 已到达目标工作台附近
-                print_forward(0);
-                print_rotate(0);
-                doing = nullptr;
             }
             break;
         case ActionType::Buy:

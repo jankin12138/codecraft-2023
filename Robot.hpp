@@ -72,7 +72,9 @@ private:
 
     double delta_v_rad_max();
 
-    double calc_v_rad(double target_rad);
+    double calc_v_rad(double target_rad,double v_rad);
+
+    double calc_vector_rad(double x,double y) ;
 };
 
 std::istream &operator>>(std::istream &in, Robot &robot);
