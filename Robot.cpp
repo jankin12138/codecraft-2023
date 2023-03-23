@@ -14,27 +14,27 @@ namespace {
 
 void Robot::print_forward(double v) {
     cout << "forward" << ' ' << id << ' ' << v << endl;
-    fprintf(stderr, "forward: %f\n", id);// 用于定位问题
+    //fprintf(stderr, "forward: %d %f\n", id,v);// 用于定位问题
 }
 
 void Robot::print_rotate(double v) {
     cout << "rotate" << ' ' << id << ' ' << v << endl;
-    fprintf(stderr, "rotate: %f %f\n", id,v);// 用于定位问题
+    //fprintf(stderr, "rotate: %d %f\n", id,v);// 用于定位问题
 }
 
 void Robot::print_buy() {
     cout << "buy" << ' ' << id << endl;
-    fprintf(stderr, "buy: %f\n", id);// 用于定位问题
+    //fprintf(stderr, "buy: %d\n", id);// 用于定位问题
 }
 
 void Robot::print_sell() {
     cout << "sell" << ' ' << id << endl;
-    fprintf(stderr, "sell: %f\n", id);// 用于定位问题
+    //fprintf(stderr, "sell: %d\n", id);// 用于定位问题
 }
 
 void Robot::print_destroy() {
     cout << "destroy" << ' ' << id << endl;
-    fprintf(stderr, "destroy: %f\n", id);// 用于定位问题
+    //fprintf(stderr, "destroy: %d\n", id);// 用于定位问题
 }
 
 void Robot::buy(Stage &stage) {
