@@ -14,57 +14,37 @@ namespace {
 
 void Robot::print_forward(double v) {
     cout << "forward" << ' ' << id << ' ' << v << endl;
-    <<<<<<< HEAD
-            #if DEBUG
-            cerr << "forward" << ' ' << id << ' ' << v << endl;
-            #endif
-            == == == =
-    //fprintf(stderr, "forward: %d %f\n", id,v);// 用于定位问题
-    >>>>>>> cd6facc5d4dde6fc4dfae23df567c5c74231e446
+#if DEBUG
+    cerr << "forward" << ' ' << id << ' ' << v << endl;
+#endif
 }
 
 void Robot::print_rotate(double v) {
     cout << "rotate" << ' ' << id << ' ' << v << endl;
-    <<<<<<< HEAD
-            #if DEBUG
-            cerr << "rotate" << ' ' << id << ' ' << v << endl;
-            #endif
-            == == == =
-    //fprintf(stderr, "rotate: %d %f\n", id,v);// 用于定位问题
-    >>>>>>> cd6facc5d4dde6fc4dfae23df567c5c74231e446
+#if DEBUG
+    cerr << "rotate" << ' ' << id << ' ' << v << endl;
+#endif
 }
 
 void Robot::print_buy() {
     cout << "buy" << ' ' << id << endl;
-    <<<<<<< HEAD
-            #if DEBUG
-            cerr << "buy" << ' ' << id << endl;
-            #endif
-            == == == =
-    //fprintf(stderr, "buy: %d\n", id);// 用于定位问题
-    >>>>>>> cd6facc5d4dde6fc4dfae23df567c5c74231e446
+#if DEBUG
+    cerr << "buy" << ' ' << id << endl;
+#endif
 }
 
 void Robot::print_sell() {
     cout << "sell" << ' ' << id << endl;
-    <<<<<<< HEAD
-            #if DEBUG
-            cerr << "sell" << ' ' << id << endl;
-            #endif
-            == == == =
-    //fprintf(stderr, "sell: %d\n", id);// 用于定位问题
-    >>>>>>> cd6facc5d4dde6fc4dfae23df567c5c74231e446
+#if DEBUG
+    cerr << "sell" << ' ' << id << endl;
+#endif
 }
 
 void Robot::print_destroy() {
     cout << "destroy" << ' ' << id << endl;
-    <<<<<<< HEAD
-            #if DEBUG
-            cerr << "destroy" << ' ' << id << endl;
-            #endif
-            == == == =
-    //fprintf(stderr, "destroy: %d\n", id);// 用于定位问题
-    >>>>>>> cd6facc5d4dde6fc4dfae23df567c5c74231e446
+#if DEBUG
+    cerr << "destroy" << ' ' << id << endl;
+#endif
 }
 
 void Robot::buy(Stage &stage) {
