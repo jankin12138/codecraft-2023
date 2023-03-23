@@ -74,7 +74,7 @@ Stage *Consumer::find_nearest_pos(Map &map, Stage *from_stage) {
                 break;
         }
     }
-    for (auto &arr: map.stage_arr[target_stage_id]) {
+    for (auto &arr: map.stage_arr[target_stage_id-1]) {
         // 当前工作台是否已经存在其他原料
         if (material_exist(arr)) {
             continue;
