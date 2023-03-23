@@ -153,7 +153,9 @@ int main() {
                 if (!select_robot.is_busy()) {
                     Task *todo_task = my_consumer.get_task(my_producer, my_map, select_robot);
                     select_robot.rcv_task(*todo_task);
-                    fprintf(stderr, "from_stage_id: %d(%f,%f) ==> to_stage_id: %d(%f,%f)\n", todo_task->from_stage->stage_id, todo_task->from_stage->pos_x, todo_task->from_stage->pos_y, todo_task->to_stage->stage_id, todo_task->to_stage->pos_x, todo_task->to_stage->pos_y);
+                    fprintf(stderr, "from_stage_id: %d(%f,%f) ==> to_stage_id: %d(%f,%f)\n",
+                            todo_task->from_stage->stage_id, todo_task->from_stage->pos_x, todo_task->from_stage->pos_y,
+                            todo_task->to_stage->stage_id, todo_task->to_stage->pos_x, todo_task->to_stage->pos_y);
                 }
 #if DEBUG
                 if (select_robot.doing!=NULL){

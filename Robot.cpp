@@ -14,37 +14,57 @@ namespace {
 
 void Robot::print_forward(double v) {
     cout << "forward" << ' ' << id << ' ' << v << endl;
-#if DEBUG
-    cerr << "forward" << ' ' << id << ' ' << v << endl;
-#endif
+    <<<<<<< HEAD
+            #if DEBUG
+            cerr << "forward" << ' ' << id << ' ' << v << endl;
+            #endif
+            == == == =
+    //fprintf(stderr, "forward: %d %f\n", id,v);// 用于定位问题
+    >>>>>>> cd6facc5d4dde6fc4dfae23df567c5c74231e446
 }
 
 void Robot::print_rotate(double v) {
     cout << "rotate" << ' ' << id << ' ' << v << endl;
-#if DEBUG
-    cerr << "rotate" << ' ' << id << ' ' << v << endl;
-#endif
+    <<<<<<< HEAD
+            #if DEBUG
+            cerr << "rotate" << ' ' << id << ' ' << v << endl;
+            #endif
+            == == == =
+    //fprintf(stderr, "rotate: %d %f\n", id,v);// 用于定位问题
+    >>>>>>> cd6facc5d4dde6fc4dfae23df567c5c74231e446
 }
 
 void Robot::print_buy() {
     cout << "buy" << ' ' << id << endl;
-#if DEBUG
-    cerr << "buy" << ' ' << id << endl;
-#endif
+    <<<<<<< HEAD
+            #if DEBUG
+            cerr << "buy" << ' ' << id << endl;
+            #endif
+            == == == =
+    //fprintf(stderr, "buy: %d\n", id);// 用于定位问题
+    >>>>>>> cd6facc5d4dde6fc4dfae23df567c5c74231e446
 }
 
 void Robot::print_sell() {
     cout << "sell" << ' ' << id << endl;
-#if DEBUG
-    cerr << "sell" << ' ' << id << endl;
-#endif
+    <<<<<<< HEAD
+            #if DEBUG
+            cerr << "sell" << ' ' << id << endl;
+            #endif
+            == == == =
+    //fprintf(stderr, "sell: %d\n", id);// 用于定位问题
+    >>>>>>> cd6facc5d4dde6fc4dfae23df567c5c74231e446
 }
 
 void Robot::print_destroy() {
     cout << "destroy" << ' ' << id << endl;
-#if DEBUG
-    cerr << "destroy" << ' ' << id << endl;
-#endif
+    <<<<<<< HEAD
+            #if DEBUG
+            cerr << "destroy" << ' ' << id << endl;
+            #endif
+            == == == =
+    //fprintf(stderr, "destroy: %d\n", id);// 用于定位问题
+    >>>>>>> cd6facc5d4dde6fc4dfae23df567c5c74231e446
 }
 
 void Robot::buy(Stage &stage) {
@@ -111,14 +131,14 @@ void Robot::tick() {
     double target_rad, dist_rad;
     switch (doing->actionType) {
         case ActionType::Goto:
-            if(dist < operate_distance && v_x == 0 && v_y == 0) {
+            if (dist < operate_distance && v_x == 0 && v_y == 0) {
                 if (v_rad)
                     print_rotate(0);
                 else
                     doing = nullptr;
             }
             target_rad = atan((stage.pos_y - pos_y) / (stage.pos_x - pos_x));
-            if(dist_x < 0)
+            if (dist_x < 0)
                 target_rad += pi;
             dist_rad = target_rad - pos_rad;
             if (fabs(dist_rad) > 1e-2/*允许角度偏差*/) {
