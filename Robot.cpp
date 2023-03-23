@@ -1,6 +1,7 @@
 #include "Robot.hpp"
 #include "util.hpp"
 #include "Stage.hpp"
+#include <cmath>
 
 using namespace std;
 
@@ -13,22 +14,27 @@ namespace {
 
 void Robot::print_forward(double v) {
     cout << "forward" << ' ' << id << ' ' << v << endl;
+    fprintf(stderr, "forward: %f\n", id);// 用于定位问题
 }
 
 void Robot::print_rotate(double v) {
     cout << "rotate" << ' ' << id << ' ' << v << endl;
+    fprintf(stderr, "rotate: %f %f\n", id,v);// 用于定位问题
 }
 
 void Robot::print_buy() {
     cout << "buy" << ' ' << id << endl;
+    fprintf(stderr, "buy: %f\n", id);// 用于定位问题
 }
 
 void Robot::print_sell() {
     cout << "sell" << ' ' << id << endl;
+    fprintf(stderr, "sell: %f\n", id);// 用于定位问题
 }
 
 void Robot::print_destroy() {
     cout << "destroy" << ' ' << id << endl;
+    fprintf(stderr, "destroy: %f\n", id);// 用于定位问题
 }
 
 void Robot::buy(Stage &stage) {
@@ -74,7 +80,7 @@ void Robot::tick() {
         case ActionType::Goto:
             target_rad = atan((stage.pos_y - pos_y) / (stage.pos_x - pos_x));
             dist_rad = target_rad - pos_rad;
-            if (dist_rad >= 1e-4/*允许角度偏差*/) {
+            if (fabs(dist_rad) >= 1e-4/*允许角度偏差*/) {
                 // 转动
                 if (dist_rad > 0)
                     print_rotate(min(pi, dist_rad / seconds_per_frame));
