@@ -4,8 +4,10 @@
 #include <string.h>
 #include <stdlib.h>
 
-constexpr static double pi = 3.14159;
-constexpr static double seconds_per_frame = 0.015;
+#define DEBUG 0
+
+constexpr static double pi = 3.1415926;
+constexpr static double seconds_per_frame = 0.02;
 constexpr static int no_stage = -1;
 constexpr static int no_object = 0;
 

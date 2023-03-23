@@ -14,27 +14,37 @@ namespace {
 
 void Robot::print_forward(double v) {
     cout << "forward" << ' ' << id << ' ' << v << endl;
-    fprintf(stderr, "forward: %f\n", id);// 用于定位问题
+#if DEBUG
+    cerr << "forward" << ' ' << id << ' ' << v << endl;
+#endif
 }
 
 void Robot::print_rotate(double v) {
     cout << "rotate" << ' ' << id << ' ' << v << endl;
-    fprintf(stderr, "rotate: %f %f\n", id,v);// 用于定位问题
+#if DEBUG
+    cerr << "rotate" << ' ' << id << ' ' << v << endl;
+#endif
 }
 
 void Robot::print_buy() {
     cout << "buy" << ' ' << id << endl;
-    fprintf(stderr, "buy: %f\n", id);// 用于定位问题
+#if DEBUG
+    cerr << "buy" << ' ' << id << endl;
+#endif
 }
 
 void Robot::print_sell() {
     cout << "sell" << ' ' << id << endl;
-    fprintf(stderr, "sell: %f\n", id);// 用于定位问题
+#if DEBUG
+    cerr << "sell" << ' ' << id << endl;
+#endif
 }
 
 void Robot::print_destroy() {
     cout << "destroy" << ' ' << id << endl;
-    fprintf(stderr, "destroy: %f\n", id);// 用于定位问题
+#if DEBUG
+    cerr << "destroy" << ' ' << id << endl;
+#endif
 }
 
 void Robot::buy(Stage &stage) {
@@ -63,7 +73,26 @@ void Robot::destroy() {
 }
 
 bool Robot::is_busy() {
-    return doing == nullptr && todo.empty();
+    return !(doing == nullptr && todo.empty());
+}
+
+double Robot::delta_v_max() {
+    constexpr static double delta_v_max_with_obj = 250 / (0.53 * 20 * 50);
+    constexpr static double delta_v_max_without_obj = 250 / (0.45 * 20 * 50);
+    return object_id == no_object ? delta_v_max_without_obj : delta_v_max_with_obj;
+}
+
+double Robot::delta_v_rad_max() {
+    constexpr static double delta_v_rad_max_with_obj = 50 / (0.5 * 20 * 0.53 * 0.53 * 0.53);
+    constexpr static double delta_v_rad_max_without_obj = 50 / (0.5 * 20 * 0.45 * 0.45 * 0.45);
+    return object_id == no_object ? delta_v_rad_max_without_obj : delta_v_rad_max_with_obj;
+}
+
+double Robot::calc_v_rad(double target_rad) {
+    // 简便起见，只考虑逆时针旋转
+    double dist_rad = target_rad - pos_rad;
+    double target_v_rad = dist_rad / seconds_per_frame;
+    return target_v_rad;
 }
 
 void Robot::tick() {
@@ -72,25 +101,42 @@ void Robot::tick() {
             return;
         doing = &todo.front();
         todo.pop();
+#if DEBUG
+        cerr << this->id << ": start new action" << static_cast<int>(doing->actionType) << endl;
+#endif
     }
     Stage &stage = *doing->stage;
     double dist = distance(pos_x, pos_y, stage.pos_x, stage.pos_y);
+    double dist_x = stage.pos_x - pos_x, dist_y = stage.pos_y - pos_y;
     double target_rad, dist_rad;
     switch (doing->actionType) {
         case ActionType::Goto:
-            target_rad = atan((stage.pos_y - pos_y) / (stage.pos_x - pos_x));
-            dist_rad = target_rad - pos_rad;
-            if (fabs(dist_rad) >= 1e-4/*允许角度偏差*/) {
-                // 转动
-                if (dist_rad > 0)
-                    print_rotate(min(pi, dist_rad / seconds_per_frame));
+            if(dist < operate_distance && v_x == 0 && v_y == 0) {
+                if (v_rad)
+                    print_rotate(0);
                 else
-                    print_rotate(max(-pi, dist_rad / seconds_per_frame));
-                print_forward(0);
+                    doing = nullptr;
+            }
+            target_rad = atan((stage.pos_y - pos_y) / (stage.pos_x - pos_x));
+            if(dist_x < 0)
+                target_rad += pi;
+            dist_rad = target_rad - pos_rad;
+            if (fabs(dist_rad) > 1e-2/*允许角度偏差*/) {
+                // 先停止前进再转动
+                if (v_x || v_y) {
+                    print_forward(0);
+                    print_rotate(0);
+                } else {
+                    print_rotate(calc_v_rad(target_rad));
+                }
             } else if (dist >= operate_distance) {
-                // 前进
-                print_rotate(0);
-                print_forward(min(6.0, dist / seconds_per_frame));
+                // 先停止转动再前进
+                if (v_rad) {
+                    print_forward(0);
+                    print_rotate(0);
+                } else {
+                    print_forward(min(6.0, dist / seconds_per_frame));
+                }
             } else {
                 // 已到达目标工作台附近
                 print_forward(0);
@@ -100,10 +146,14 @@ void Robot::tick() {
             break;
         case ActionType::Buy:
             buy(stage);
+            print_forward(0);
+            print_rotate(0);
             doing = nullptr;
             break;
         case ActionType::Sell:
             sell(stage);
+            print_forward(0);
+            print_rotate(0);
             doing = nullptr;
             break;
         default:

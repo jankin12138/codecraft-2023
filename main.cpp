@@ -117,18 +117,18 @@ using namespace std;
 
 // 4.合成测试
 int main() {
+    cout << atan(-1) << endl;
+
     // 初始化成员函数
-    Sleep(10 * 1000);
-    perror("Tag4");
+    Sleep(3 * 1000);
     Producer my_producer;
     Consumer my_consumer;
     Map my_map;
     my_map.init_map(stdin);
 
     //开始接收帧数据
-    puts("OK");
+    puts("OK\n");
     fflush(stdout);
-
     //帧循环
     int frameID;
     while (scanf("%d", &frameID) != EOF) {
@@ -147,21 +147,25 @@ int main() {
         //4.消费者分配任务
         //5.机器人执行任务
         for (int robotId = 0; robotId < 4; robotId++) {
+            Robot &select_robot = my_map.robot_arr[robotId];
             if (!my_producer.is_empty()) {
-                Robot &select_robot = my_map.robot_arr[robotId];
                 //5.1 空闲机器人向Consumer申请任务
-                if (select_robot.is_busy()) {
-                    Task* todo_task = my_consumer.get_task(my_producer, my_map, select_robot);
+                if (!select_robot.is_busy()) {
+                    Task *todo_task = my_consumer.get_task(my_producer, my_map, select_robot);
                     select_robot.rcv_task(*todo_task);
-                    fprintf(stderr, "from_stage: %d,to_stage: %d\n", todo_task->from_stage->stage_id, todo_task->to_stage->stage_id);// 用于定位问题
-                    fprintf(stderr, "(%f %f),(%f %f)\n",  todo_task->from_stage->pos_x,todo_task->from_stage->pos_y,todo_task->to_stage->pos_x,todo_task->to_stage->pos_y);
+                    fprintf(stderr, "from_stage_id: %d(%f,%f) ==> to_stage_id: %d(%f,%f)\n", todo_task->from_stage->stage_id, todo_task->from_stage->pos_x, todo_task->from_stage->pos_y, todo_task->to_stage->stage_id, todo_task->to_stage->pos_x, todo_task->to_stage->pos_y);
                 }
-                //fprintf(stderr, "frameID: %d,robotId: %d\n", frameID, robotId);// 用于定位问题
-                select_robot.tick();
+#if DEBUG
+                if (select_robot.doing!=NULL){
+                    fprintf(stderr, "robotID: %d,(%f,%f),stageId: %d,(%f,%f)\n",
+                            select_robot.id,select_robot.pos_x,select_robot.pos_y,
+                            select_robot.doing->stage->stage_id,select_robot.doing->stage->pos_x,select_robot.doing->stage->pos_y);}// 用于定位问题
+#endif
             }
+            select_robot.tick();
         }
         //确定结果输出
-        printf("OK\n");
+        cout << "OK" << endl;
         fflush(stdout);
     }
     return 0;
