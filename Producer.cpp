@@ -1,3 +1,4 @@
+#include <cstdio>
 #include "Producer.hpp"
 #include "Task.hpp"
 #include "algorithm"
@@ -70,4 +71,12 @@ bool Producer::is_empty() {
         if (stage_id_ans[i] != 0) return false;
     }
     return true;
+}
+
+int Producer::p_size() {
+    int sum = 0;
+    for (int i = 0; i < 10; i++) {
+        sum += stage_id_ans[i];
+    }
+    return sum;
 }

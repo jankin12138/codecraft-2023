@@ -136,10 +136,10 @@ int main() {
 
         //2.生产者产生任务
         //3.工作台产生任务
+        //fprintf(stderr,"-------------------------------------------------\n");
         for (int stageId = 0; stageId < 9; stageId++) {
             for (int j = 0; j < my_map.stage_arr[stageId].size(); j++) {
-                Stage &select_stage = my_map.stage_arr[stageId][j];
-                select_stage.tick(my_producer);
+                my_map.stage_arr[stageId][j].tick(my_producer);
             }
         }
         //4.消费者分配任务
@@ -150,10 +150,12 @@ int main() {
                 //5.1 空闲机器人向Consumer申请任务
                 if (!select_robot.is_busy()) {
                     Task *todo_task = my_consumer.get_task(my_producer, my_map, select_robot);
-                    select_robot.rcv_task(*todo_task);
-                    fprintf(stderr, "from_stage_id: %d(%f,%f) ==> to_stage_id: %d(%f,%f)\n",
-                            todo_task->from_stage->stage_id, todo_task->from_stage->pos_x, todo_task->from_stage->pos_y,
-                            todo_task->to_stage->stage_id, todo_task->to_stage->pos_x, todo_task->to_stage->pos_y);
+                    if(todo_task->to_stage != nullptr) {
+                        select_robot.rcv_task(*todo_task);
+                        fprintf(stderr, "from_stage_id: %d(%f,%f) ==> to_stage_id: %d(%f,%f)\n",
+                                todo_task->from_stage->stage_id, todo_task->from_stage->pos_x, todo_task->from_stage->pos_y,
+                                todo_task->to_stage->stage_id, todo_task->to_stage->pos_x, todo_task->to_stage->pos_y);
+                    }
                 }
 #if DEBUG
                 if (select_robot.doing!=NULL){
