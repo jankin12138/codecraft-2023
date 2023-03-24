@@ -1,6 +1,8 @@
+#include <cstdio>
 #include "Stage.hpp"
 #include "Producer.hpp"
 #include "Task.hpp"
+#include "util.hpp"
 
 using namespace std;
 
@@ -49,10 +51,13 @@ vector<int> Stage::get_raw_material_ids() const {
 }
 
 bool Stage::rcv_raw_material(int object_id) {
+    //fprintf(stderr, "stage.material_status: %d object_id: %d\n",this->material_status,object_id);
+    //fprintf(stderr, "stage.x: %f Stage.y: %f\n",pos_x,pos_y);
     assert(is_raw_material(object_id));
     if ((material_status >> object_id) & 1)
         return false;
-    material_status |= 1 << object_id;
+    material_status |= (1 << object_id);
+    //fprintf(stderr, "stage.material_status: %d\n",this->material_status);
     return true;
 }
 
@@ -79,6 +84,9 @@ void Stage::tick(Producer &p) {
     if (rest_time == not_producing) {
         if (is_raw_materials_ready()) {
             material_status = 0; // 产品格清空
+            for(int i=0;i<10;i++){
+                is_material_task[i] = 0;
+            }
             rest_time = produce_time(); // 进入生产周期
         }
     }

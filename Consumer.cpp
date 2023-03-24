@@ -12,10 +12,11 @@ Task *Consumer::get_task(Producer &p, Map &map, Robot &robot) {
     return tmp;
 }
 
-bool Consumer::material_exist(Stage &stage) {
-    int s_id = stage.stage_id;
+bool Consumer::material_exist(Stage &stage,Stage &from_stage) {
+    int s_id = from_stage.stage_id;
     int material_tmp = stage.material_status;
-    return ((material_tmp >> s_id) & 1) == 1;
+    return ((material_tmp >> s_id) & 1) | (stage.is_material_task[from_stage.stage_id]);
+    //return stage.is_material_task[from_stage.stage_id];
 }
 
 //找到当前工作台的任务的最近关联工作台
@@ -76,9 +77,10 @@ Stage *Consumer::find_nearest_pos(Map &map, Stage *from_stage) {
     }
     for (auto &arr: map.stage_arr[target_stage_id-1]) {
         // 当前工作台是否已经存在其他原料
-        if (material_exist(arr)) {
+        if (material_exist(arr,*from_stage)) {
             continue;
         }
+        fprintf(stderr,"stage point:%p id:%d material_status:%d\n",&arr,arr.stage_id,arr.material_status);
         //�����������������ľ���
         dis = distance(from_stage->pos_x, from_stage->pos_y, arr.pos_x, arr.pos_y);
         if (dis < min_distance) {
@@ -86,5 +88,6 @@ Stage *Consumer::find_nearest_pos(Map &map, Stage *from_stage) {
             res = &arr;
         }
     }
+    res->is_material_task[from_stage->stage_id] = 1;
     return res;
 }
