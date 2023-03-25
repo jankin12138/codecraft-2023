@@ -10,7 +10,7 @@
 #include "Task.hpp"
 #include "util.hpp"
 #include "Consumer.hpp"
-#include "windows.h"
+// #include "windows.h"
 #include "RobotCrashPreventer.hpp"
 
 //#define _CRT_SECURE_NO_WARNINGS // 改为在编辑器设置
@@ -119,7 +119,7 @@ using namespace std;
 // 4.合成测试
 int main() {
     // 初始化成员函数
-    Sleep(3 * 1000);
+//    Sleep(3 * 1000);
     Producer my_producer;
     Consumer my_consumer;
     Map my_map;
@@ -165,7 +165,7 @@ int main() {
                 }
             }
             select_robot.tick(my_producer);
-            rcp.prevent_robot_crash();
+            //rcp.prevent_robot_crash();
         }
         //确定结果输出
         cout << "OK" << endl;

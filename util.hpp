@@ -41,3 +41,18 @@ inline void parse_char(char *line, double *temp_arr) {
         i++;
     }
 }
+
+inline int countBits(unsigned long long n)
+{
+    int number = 0;
+    int b = n;
+    while(b>0)
+    {
+        if(b%2==1)
+        {
+            number++;
+        }
+        b = b/2;
+    }
+    return number;
+}
