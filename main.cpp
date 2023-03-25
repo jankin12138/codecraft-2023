@@ -11,6 +11,7 @@
 #include "util.hpp"
 #include "Consumer.hpp"
 #include "windows.h"
+#include "RobotCrashPreventer.hpp"
 
 //#define _CRT_SECURE_NO_WARNINGS // 改为在编辑器设置
 using namespace std;
@@ -127,6 +128,7 @@ int main() {
     //开始接收帧数据
     puts("OK\n");
     fflush(stdout);
+    RobotCrashPreventer rcp(my_map.robot_arr, 4);
     //帧循环
     int frameID;
     while (scanf("%d", &frameID) != EOF) {
@@ -161,14 +163,9 @@ int main() {
                                 todo_task->to_stage->stage_id, todo_task->to_stage->pos_x, todo_task->to_stage->pos_y);
                     }
                 }
-#if DEBUG
-                if (select_robot.doing!=NULL){
-                    fprintf(stderr, "robotID: %d,(%f,%f),stageId: %d,(%f,%f)\n",
-                            select_robot.id,select_robot.pos_x,select_robot.pos_y,
-                            select_robot.doing->stage->stage_id,select_robot.doing->stage->pos_x,select_robot.doing->stage->pos_y);}// 用于定位问题
-#endif
             }
             select_robot.tick(my_producer);
+            rcp.prevent_robot_crash();
         }
         //确定结果输出
         cout << "OK" << endl;

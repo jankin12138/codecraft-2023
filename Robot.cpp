@@ -5,13 +5,6 @@
 
 using namespace std;
 
-namespace {
-    constexpr static double v_max = 6;
-    constexpr static double v_min = -2;
-    constexpr static double v_rad_max = 3.14159;
-    constexpr static double operate_distance = 0.4;// 机器人操作工作台的最远距离
-}
-
 void Robot::print_forward(double v) {
     cout << "forward" << ' ' << id << ' ' << v << endl;
 #if DEBUG
@@ -150,25 +143,26 @@ void Robot::tick(Producer &my_producer) {
                 print_rotate(0);
                 print_forward(0);
                 doing = nullptr;
+                break;
+            }
+            target_rad = calc_vector_rad(stage.pos_x - pos_x, stage.pos_y - pos_y);
+            dist_rad = target_rad - pos_rad;
+            if (dist_rad < 0)
+                dist_rad += 2 * pi;
+            if (dist_rad > fabs(dist_rad - 2 * pi))
+                dist_rad -= 2 * pi;
+            // 2.如果距离工作台存在距离
+            // 2.1先对准角度(大角度对准) 大约5度误差
+            if (fabs(dist_rad) > 1e-2/*允许角度偏差*/) {
+                print_rotate(calc_v_rad(dist_rad));
+                print_forward(0);
             } else {
-                target_rad = calc_vector_rad((stage.pos_x - pos_x), (stage.pos_y - pos_y));
-                dist_rad = target_rad - pos_rad;
-                if (dist_rad < 0)
-                    dist_rad += 2 * pi;
-                if (dist_rad > fabs(dist_rad - 2 * pi))
-                    dist_rad -= 2 * pi;
-                // 2.如果距离工作台存在距离
-                // 2.1先对准角度(大角度对准) 大约5度误差
-                if (fabs(dist_rad) > 1e-2/*允许角度偏差*/) {
-                    double todo_v_rad = calc_v_rad(dist_rad);
-                    print_rotate(todo_v_rad);
-                    print_forward(0);
-                } else {
-                    // 2.2再走直线（小角度修正5度误差）
-                    double todo_v_rad = calc_v_rad(dist_rad);
-                    print_rotate(todo_v_rad / 15);  //大约是62/15一帧，面向场景可以再调低点
-                    print_forward(min(6.0, dist / seconds_per_frame));
-                }
+                print_forward(v_max);
+                print_rotate(0);
+//                // 2.2再走直线（小角度修正5度误差）
+//                double todo_v_rad = calc_v_rad(dist_rad);
+//                print_rotate(todo_v_rad / 15);  //大约是62/15一帧，面向场景可以再调低点
+//                print_forward(min(6.0, dist / seconds_per_frame));
             }
             break;
         case ActionType::Buy:
