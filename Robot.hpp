@@ -20,8 +20,6 @@ public:
     double pos_rad;//朝向
     double pos_x;//x坐标
     double pos_y;//y坐标
-    double pos_x_last_frame;
-    double pos_y_last_frame;
     int id; // 机器人id[0, 3], 目前一共只有4个机器人
     Task task;//当前执行的任务
     bool is_busy();//空闲状态
@@ -72,7 +70,7 @@ private:
 
     double delta_v_rad_max();
 
-    double calc_v_rad(double target_rad,double v_rad);
+    double calc_v_rad(double target_rad);
 
     double calc_vector_rad(double x,double y) ;
 };

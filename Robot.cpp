@@ -47,7 +47,7 @@ void Robot::print_destroy() {
 #endif
 }
 
-void Robot::buy(Stage &stage,Producer &p) {
+void Robot::buy(Stage &stage, Producer &p) {
     assert(distance(pos_x, pos_y, stage.pos_x, stage.pos_y) < operate_distance); // 距离足够近
     assert(object_id == no_object); // 购买前机器人需没有其他物品
     assert(stage.product_status); // 工作台产品格需已有物品
@@ -57,7 +57,7 @@ void Robot::buy(Stage &stage,Producer &p) {
     print_buy();
 
     // 处理1 2 3 阻塞 不通知的问题
-    if (stage.rest_time == 0){
+    if (stage.rest_time == 0) {
         stage.notify_producer(p);
     }
 
@@ -70,7 +70,6 @@ void Robot::sell(Stage &stage) {
     assert(stage.rcv_raw_material(object_id)); // 可能工作台原料格已占用无法接受
     stage.is_material_task[object_id] = 0;
     object_id = no_object;
-
     print_sell();
 }
 
@@ -91,52 +90,44 @@ double Robot::delta_v_max() {
 }
 
 double Robot::delta_v_rad_max() {
-    constexpr static double delta_v_rad_max_with_obj = 50 / (0.5 * 20 * 0.53 * 0.53 * 0.53* 50) ;//0.67rad/s(38度/s)
-    constexpr static double delta_v_rad_max_without_obj = 50 / (0.5 * 20 * 0.45 * 0.45 * 0.45* 50);//1.09rad/s(62度/s)
+    constexpr static double delta_v_rad_max_with_obj = 50 / (0.5 * 20 * 0.53 * 0.53 * 0.53 * 50);//0.67rad/s(38度/s)
+    constexpr static double delta_v_rad_max_without_obj = 50 / (0.5 * 20 * 0.45 * 0.45 * 0.45 * 50);//1.09rad/s(62度/s)
     return object_id == no_object ? delta_v_rad_max_without_obj : delta_v_rad_max_with_obj;
 }
 
 // 矢量角度
-double Robot::calc_vector_rad(double x,double y) {
-    if (y>0){
-        if (x<0){
-            return atan(y / x)+pi;
-        }else{
-            return atan(y / x);
-        }
-    }else{
-
-        if (x<0){
-            return atan(y / x)-pi;
-        }else{
-            return atan(y / x);
-        }
-
-    }
+double Robot::calc_vector_rad(double x, double y) {
+    return atan(y/x) + (x < 0 ? pi : 0);
 }
-double Robot::calc_v_rad(double dist_rad,double v_rad) {
-    double target_v_rad;
-    // 通过判断v_rad防止死锁
-    if (dist_rad<0){
-        if (v_rad<0){
-            target_v_rad =  -(2*pi+dist_rad) / seconds_per_frame;    // 逆时针；
-        }else {
-            target_v_rad =  -dist_rad / seconds_per_frame;   // 顺时针；
-        }
-    }else{
-        if (v_rad<0){
-            target_v_rad = -dist_rad / seconds_per_frame;   // 逆时针；
-        }else {
-            target_v_rad =  (2*pi-dist_rad) / seconds_per_frame;    //顺时针；
-        }
-    }
-    // 弧度限制
-    if (target_v_rad<-delta_v_rad_max()){
-        target_v_rad =-delta_v_rad_max();
-    }else if(target_v_rad>delta_v_rad_max()){
-        target_v_rad = delta_v_rad_max();
-    }
-    return target_v_rad;
+
+double Robot::calc_v_rad(double dist_rad) {
+    if (dist_rad == 0)
+        return 0;
+//    double target_v_rad;
+//    // 通过判断v_rad防止死锁d
+//    if (dist_rad < 0) {
+//        if (v_rad < 0) {
+//            target_v_rad = -(2 * pi + dist_rad) / seconds_per_frame;    // 逆时针；
+//        } else {
+//            target_v_rad = -dist_rad / seconds_per_frame;   // 顺时针；
+//        }
+//    } else {
+//        if (v_rad < 0) {
+//            target_v_rad = -dist_rad / seconds_per_frame;   // 逆时针；
+//        } else {
+//            target_v_rad = (2 * pi - dist_rad) / seconds_per_frame;    //顺时针；
+//        }
+//    }
+//    // 弧度限制
+//    if (target_v_rad < -delta_v_rad_max()) {
+//        target_v_rad = -delta_v_rad_max();
+//    } else if (target_v_rad > delta_v_rad_max()) {
+//        target_v_rad = delta_v_rad_max();
+//    }
+//    return target_v_rad;
+    if (fabs(-dist_rad) < fabs(dist_rad))
+        dist_rad *= -1;
+    return dist_rad < 0 ? max(-pi, dist_rad/ seconds_per_frame) : min(pi, dist_rad/seconds_per_frame);
 }
 
 void Robot::tick(Producer &my_producer) {
@@ -154,31 +145,34 @@ void Robot::tick(Producer &my_producer) {
     double target_rad, dist_rad;
     switch (doing->actionType) {
         case ActionType::Goto:
-            target_rad = calc_vector_rad((stage.pos_x - pos_x),(stage.pos_y - pos_y));
-            // cerr<<atan2((stage.pos_y - pos_y),(stage.pos_x - pos_x))<<"\n"; // 我就是傻逼，现成的函数不知道用
-            dist_rad = usermod(target_rad) - usermod(pos_rad);
             if (dist < operate_distance) {
                 // 1.如果到达目标工作台附近
                 print_rotate(0);
                 print_forward(0);
                 doing = nullptr;
             } else {
+                target_rad = calc_vector_rad((stage.pos_x - pos_x), (stage.pos_y - pos_y));
+                dist_rad = target_rad - pos_rad;
+                if (dist_rad < 0)
+                    dist_rad += 2 * pi;
+                if (dist_rad > fabs(dist_rad - 2 * pi))
+                    dist_rad -= 2 * pi;
                 // 2.如果距离工作台存在距离
                 // 2.1先对准角度(大角度对准) 大约5度误差
-                if (fabs(dist_rad) > 0.1/*允许角度偏差*/) {
-                    double todo_v_rad = calc_v_rad(dist_rad,v_rad);
+                if (fabs(dist_rad) > 1e-2/*允许角度偏差*/) {
+                    double todo_v_rad = calc_v_rad(dist_rad);
                     print_rotate(todo_v_rad);
                     print_forward(0);
                 } else {
                     // 2.2再走直线（小角度修正5度误差）
-                    double todo_v_rad = calc_v_rad(dist_rad,v_rad);
-                    print_rotate(todo_v_rad/15);  //大约是62/15一帧，面向场景可以再调低点
+                    double todo_v_rad = calc_v_rad(dist_rad);
+                    print_rotate(todo_v_rad / 15);  //大约是62/15一帧，面向场景可以再调低点
                     print_forward(min(6.0, dist / seconds_per_frame));
                 }
             }
             break;
         case ActionType::Buy:
-            buy(stage,my_producer);
+            buy(stage, my_producer);
             print_forward(0);
             print_rotate(0);
             doing = nullptr;

@@ -118,7 +118,7 @@ using namespace std;
 // 4.合成测试
 int main() {
     // 初始化成员函数
-    Sleep(8 * 1000);
+    Sleep(3 * 1000);
     Producer my_producer;
     Consumer my_consumer;
     Map my_map;
@@ -130,8 +130,10 @@ int main() {
     //帧循环
     int frameID;
     while (scanf("%d", &frameID) != EOF) {
-        printf("%d\n", frameID);
-        //cerr<<"frameID:"<<frameID<<"\n";
+        cout << frameID << endl;
+#if DEBUG
+        cerr << frameID << endl;
+#endif
         //1.刷新地图数据
         my_map.flush_map(stdin, frameID);
 
