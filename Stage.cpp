@@ -1,4 +1,5 @@
 #include <cstdio>
+#include <iostream>
 #include "Stage.hpp"
 #include "Producer.hpp"
 #include "Task.hpp"
@@ -55,6 +56,7 @@ bool Stage::rcv_raw_material(int object_id) {
     if ((material_status >> object_id) & 1)
         return false;
     material_status |= (1 << object_id);
+    if(material_status>16) std::cerr<<"material_status123123"<<material_status<<"\n";
     return true;
 }
 

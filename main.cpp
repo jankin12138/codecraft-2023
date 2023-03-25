@@ -131,7 +131,7 @@ int main() {
     int frameID;
     while (scanf("%d", &frameID) != EOF) {
         printf("%d\n", frameID);
-        cerr<<"frameID:"<<frameID<<"\n";
+        //cerr<<"frameID:"<<frameID<<"\n";
         //1.刷新地图数据
         my_map.flush_map(stdin, frameID);
 

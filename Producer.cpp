@@ -2,6 +2,7 @@
 #include "Producer.hpp"
 #include "Task.hpp"
 #include "algorithm"
+#include "iostream"
 
 class Task;
 namespace {
@@ -31,7 +32,6 @@ Task *find_stage_id(std::unordered_map<Stage *, Task *> &task_map, int stage_id)
 //均衡获取任务，7大于4、5、6大于1、2、3（主要调度逻辑函数）
 Task *Producer::get_task() {
     Task *tmp = nullptr;
-
     if (stage_id_ans[7] != 0) {
         tmp = find_stage_id(task_map, 7);
         stage_id_ans[7]--;
@@ -63,6 +63,7 @@ Task *Producer::get_task() {
             }
         }
     }
+
     return tmp;
 }
 //判断任务是否为空

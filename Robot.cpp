@@ -68,9 +68,7 @@ void Robot::sell(Stage &stage) {
     assert(object_id != no_object); // 购买前机器人需持有一样物品
     assert(stage.is_raw_material(object_id)); // 机器人持有物品需为工作台原料
     assert(stage.rcv_raw_material(object_id)); // 可能工作台原料格已占用无法接受
-    for(int i=0;i<10;i++){
-        stage.is_material_task[i] = 0;
-    }
+    stage.is_material_task[object_id] = 0;
     object_id = no_object;
 
     print_sell();
