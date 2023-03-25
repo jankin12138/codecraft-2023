@@ -7,7 +7,9 @@
 #include "util.hpp"
 
 class Stage;
+
 class Producer;
+
 class Robot {
 public:
     int stage_id;//所处工作台, -1 表示当前没有处于任何工作台附近, [0,工作台总数-1] 表示某工作台的下标。当前机器人的所有购买、出售行为均针对该工作台进行。
@@ -24,8 +26,8 @@ public:
     Task task;//当前执行的任务
     bool is_busy();//空闲状态
 
-    Robot() : stage_id(no_stage), object_id(no_object),time_value_coef(1), crash_value_coef(1),
-              v_rad(0),v_x(0),v_y(0),pos_rad(0),pos_x(-1), pos_y(-1),id(-1){}
+    Robot() : stage_id(no_stage), object_id(no_object), time_value_coef(1), crash_value_coef(1),
+              v_rad(0), v_x(0), v_y(0), pos_rad(0), pos_x(-1), pos_y(-1), id(-1) {}
 
     enum class ActionType {
         Goto,
@@ -54,7 +56,7 @@ public:
 
     void print_destroy();
 
-    void buy(Stage &stage,Producer &p);
+    void buy(Stage &stage, Producer &p);
 
     void sell(Stage &stage);
 
@@ -63,7 +65,7 @@ public:
     void rcv_task(Task const &task);
 
     /// 每帧调用，生成机器人行为对应输出
-    void tick( Producer &p);
+    void tick(Producer &p);
 
 private:
     double delta_v_max();
@@ -72,7 +74,7 @@ private:
 
     double calc_v_rad(double target_rad);
 
-    double calc_vector_rad(double x,double y) ;
+    double calc_vector_rad(double x, double y);
 };
 
 std::istream &operator>>(std::istream &in, Robot &robot);

@@ -1,4 +1,3 @@
-#include <cstdio>
 #include <iostream>
 #include "Stage.hpp"
 #include "Producer.hpp"
@@ -56,7 +55,7 @@ bool Stage::rcv_raw_material(int object_id) {
     if ((material_status >> object_id) & 1)
         return false;
     material_status |= (1 << object_id);
-    if(material_status>16) std::cerr<<"material_status123123"<<material_status<<"\n";
+    if (material_status > 16) std::cerr << "material_status123123" << material_status << "\n";
     return true;
 }
 
@@ -82,7 +81,7 @@ int Stage::produce_time() {
 void Stage::tick(Producer &p) {
     // 进入生产周期的逻辑
     if (rest_time == not_producing) {
-        if (is_raw_materials_ready()){
+        if (is_raw_materials_ready()) {
             material_status = 0; // 产品格清空
             rest_time = produce_time(); // 进入生产周期
         }

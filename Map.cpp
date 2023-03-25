@@ -1,6 +1,6 @@
 #include "Map.hpp"
-#include "util.hpp"
 #include "Stage.hpp"
+#include "util.hpp"
 
 using namespace std;
 
@@ -27,7 +27,8 @@ void Map::init_map(FILE *file) {
             }
                 // 初始化工作台
             else if (line[i] >= '1' && line[i] <= '9') {
-                Stage temp_stage = {stage_count,int(line[i] - '0'), (i + 1) * 0.5, 50.0 - (rows_count + 1) * 0.5, -1, 0, 0};
+                Stage temp_stage = {stage_count, int(line[i] - '0'), (i + 1) * 0.5, 50.0 - (rows_count + 1) * 0.5, -1,
+                                    0, 0};
                 stage_arr[int(line[i] - '1')].push_back(temp_stage);
                 stage_count++;
             }
@@ -39,7 +40,7 @@ void Map::init_map(FILE *file) {
 
 
 // 从每一帧刷新数据：从本地文件初始化Map,提交代码需要从stdin初始化
-void Map::flush_map(FILE *file,int frameID) {
+void Map::flush_map(FILE *file, int frameID) {
     char line[1024];
     int rows_count = 0;          // 帧结构行数计数
     int stage_counts[9] = {0}; // 工作台各类型数量计数
@@ -56,13 +57,12 @@ void Map::flush_map(FILE *file,int frameID) {
             frame = frameID;
             money = temp_arr[0];
         }
-        // 处理第二行-1+map->stage_num：工作台
+            // 处理第二行-1+map->stage_num：工作台
         else if (rows_count == 1) {
             stage_num = temp_arr[0];
-        }
-        else if (rows_count <= 1 + stage_num) {
+        } else if (rows_count <= 1 + stage_num) {
             Stage &stage = stage_arr[int(temp_arr[0]) - 1][stage_counts[int(temp_arr[0]) - 1]];  // 获取需要刷新的工作台
-            stage.stage_sn = rows_count-2;
+            stage.stage_sn = rows_count - 2;
             stage.stage_id = temp_arr[0];
             stage.pos_x = temp_arr[1];
             stage.pos_y = temp_arr[2];
@@ -71,7 +71,7 @@ void Map::flush_map(FILE *file,int frameID) {
             stage.product_status = temp_arr[5];
             stage_counts[int(temp_arr[0]) - 1]++;
         }
-        // 处理剩余行：机器人
+            // 处理剩余行：机器人
         else {
             Robot &robot = robot_arr[rows_count - (2 + stage_num)]; // 获取需要刷新的机器人
             robot.stage_id = temp_arr[0];

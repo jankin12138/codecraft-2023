@@ -26,5 +26,5 @@ void RobotCrashPreventer::prevent_robot_crash() {
 }
 
 bool RobotCrashPreventer::will_crash(Robot &robot1, Robot &robot2) {
-    return distance(robot1.pos_x, robot1.pos_y, robot2.pos_x, robot2.pos_y) < v_max * seconds_per_frame * 3 +0.53;
+    return distance(robot1.pos_x, robot1.pos_y, robot2.pos_x, robot2.pos_y) < v_max * seconds_per_frame * 3 + 0.53;
 }

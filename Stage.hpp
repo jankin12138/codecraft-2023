@@ -24,6 +24,7 @@ public:
     void notify_producer(Producer &p);  // 工作台完成创建后调用此函数通知生产者
     int product_object_id() const;      // 生产物品id
     bool is_raw_material(int object_id) const;
+
     int is_material_task[10];
 
     std::vector<int> get_raw_material_ids() const;

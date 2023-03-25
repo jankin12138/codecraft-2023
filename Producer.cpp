@@ -1,8 +1,7 @@
-#include <cstdio>
+#include <algorithm>
+
 #include "Producer.hpp"
 #include "Task.hpp"
-#include "algorithm"
-#include "iostream"
 
 class Task;
 namespace {

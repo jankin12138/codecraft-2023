@@ -90,7 +90,7 @@ double Robot::delta_v_rad_max() {
 
 // 矢量角度
 double Robot::calc_vector_rad(double x, double y) {
-    return atan(y/x) + (x < 0 ? pi : 0);
+    return atan(y / x) + (x < 0 ? pi : 0);
 }
 
 double Robot::calc_v_rad(double dist_rad) {
@@ -120,7 +120,7 @@ double Robot::calc_v_rad(double dist_rad) {
 //    return target_v_rad;
     if (fabs(-dist_rad) < fabs(dist_rad))
         dist_rad *= -1;
-    return dist_rad < 0 ? max(-pi, dist_rad/ seconds_per_frame) : min(pi, dist_rad/seconds_per_frame);
+    return dist_rad < 0 ? max(-pi, dist_rad / seconds_per_frame) : min(pi, dist_rad / seconds_per_frame);
 }
 
 void Robot::tick(Producer &my_producer) {
