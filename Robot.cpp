@@ -47,7 +47,7 @@ void Robot::print_destroy() {
 #endif
 }
 
-void Robot::buy(Stage &stage) {
+void Robot::buy(Stage &stage,Producer &p) {
     assert(distance(pos_x, pos_y, stage.pos_x, stage.pos_y) < operate_distance); // 距离足够近
     assert(object_id == no_object); // 购买前机器人需没有其他物品
     assert(stage.product_status); // 工作台产品格需已有物品
@@ -55,6 +55,12 @@ void Robot::buy(Stage &stage) {
     assert(object_id != no_object); // 工作台需为生产型
     stage.product_status = 0; // 工作台产品格清空
     print_buy();
+
+    // 处理1 2 3 阻塞 不通知的问题
+    if (stage.rest_time == 0){
+        stage.notify_producer(p);
+    }
+
 }
 
 void Robot::sell(Stage &stage) {
@@ -66,6 +72,7 @@ void Robot::sell(Stage &stage) {
         stage.is_material_task[i] = 0;
     }
     object_id = no_object;
+
     print_sell();
 }
 
@@ -134,7 +141,7 @@ double Robot::calc_v_rad(double dist_rad,double v_rad) {
     return target_v_rad;
 }
 
-void Robot::tick() {
+void Robot::tick(Producer &my_producer) {
     if (doing == nullptr) {
         if (todo.empty())
             return;
@@ -173,7 +180,7 @@ void Robot::tick() {
             }
             break;
         case ActionType::Buy:
-            buy(stage);
+            buy(stage,my_producer);
             print_forward(0);
             print_rotate(0);
             doing = nullptr;

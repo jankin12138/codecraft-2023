@@ -78,16 +78,18 @@ int Stage::produce_time() {
 }
 
 void Stage::tick(Producer &p) {
+    // 进入生产周期的逻辑
     if (rest_time == not_producing) {
         if (is_raw_materials_ready()){
             material_status = 0; // 产品格清空
             rest_time = produce_time(); // 进入生产周期
         }
     }
+    // 生产产品的逻辑
     if (rest_time > 0)
         --rest_time;
+    // 产品生产完成的逻辑
     if (rest_time == blocking && product_status == 0) {
-    //if(rest_time == blocking){
         rest_time = not_producing;
         product_status = 1;
         this->count++;

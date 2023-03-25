@@ -131,6 +131,7 @@ int main() {
     int frameID;
     while (scanf("%d", &frameID) != EOF) {
         printf("%d\n", frameID);
+        cerr<<"frameID:"<<frameID<<"\n";
         //1.刷新地图数据
         my_map.flush_map(stdin, frameID);
 
@@ -139,7 +140,8 @@ int main() {
         //fprintf(stderr,"-------------------------------------------------\n");
         for (int stageId = 0; stageId < 9; stageId++) {
             for (int j = 0; j < my_map.stage_arr[stageId].size(); j++) {
-                my_map.stage_arr[stageId][j].tick(my_producer);
+                Stage &select_stage = my_map.stage_arr[stageId][j];
+                select_stage.tick(my_producer);
             }
         }
         //4.消费者分配任务
@@ -164,7 +166,7 @@ int main() {
                             select_robot.doing->stage->stage_id,select_robot.doing->stage->pos_x,select_robot.doing->stage->pos_y);}// 用于定位问题
 #endif
             }
-            select_robot.tick();
+            select_robot.tick(my_producer);
         }
         //确定结果输出
         cout << "OK" << endl;
