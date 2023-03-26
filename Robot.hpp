@@ -31,11 +31,12 @@ public:
               v_rad(0), v_x(0), v_y(0), pos_rad(0), pos_x(-1), pos_y(-1), id(-1) {}
 
     enum class ActionType {
-        Goto,
-        Buy,
-        Sell
+//        Goto,
+//        Buy,
+//        Sell
+        GotoBuy,
+        GotoSell,
     };
-
     class Action {
     public:
         ActionType actionType;
@@ -45,6 +46,7 @@ public:
     };
 
     std::queue<Action> todo;
+    std::queue<Action> Temp_todo;
     Action *doing = NULL;
 
     void print_forward(double v);
@@ -65,6 +67,8 @@ public:
 
     void rcv_task(Task const &task);
 
+    void rcv_jump_task(const Task &task);
+    
     /// 每帧调用，生成机器人行为对应输出
     void tick(Producer &p);
 

@@ -134,12 +134,82 @@ void Robot::tick(Producer &my_producer) {
     double dist = distance(pos_x, pos_y, stage.pos_x, stage.pos_y);
     double target_rad, dist_rad;
     next_rotate = 0;
+//     switch (doing->actionType) {
+//         case ActionType::Goto:
+//             if (dist < operate_distance) {
+//                 // 1.如果到达目标工作台附近
+//                 print_rotate(0);
+//                 print_forward(0);
+//                 doing = nullptr;
+//                 break;
+//             }
+//             target_rad = calc_rad(stage.pos_x - pos_x, stage.pos_y - pos_y);
+//             dist_rad = target_rad - pos_rad;
+//             if (dist_rad < 0)
+//                 dist_rad += 2 * pi;
+//             if (dist_rad > fabs(dist_rad - 2 * pi))
+//                 dist_rad -= 2 * pi;
+//             // 2.如果距离工作台存在距离
+//             // 2.1先对准角度(大角度对准) 大约5度误差
+//             if (fabs(dist_rad) > 1e-2/*允许角度偏差*/) {
+//                 print_rotate(calc_v_rad(dist_rad));
+//                 print_forward(4.2);
+//             } else {
+//                 print_forward(v_max);
+//                 print_rotate(0);
+// //                // 2.2再走直线（小角度修正5度误差）
+// //                double todo_v_rad = calc_v_rad(dist_rad);
+// //                print_rotate(todo_v_rad / 15);  //大约是62/15一帧，面向场景可以再调低点
+// //                print_forward(min(6.0, dist / seconds_per_frame));
+//             }
+//             break;
+//         case ActionType::Buy:
+//             buy(stage, my_producer);
+//             print_forward(0);
+//             print_rotate(0);
+//             doing = nullptr;
+//             break;
+//         case ActionType::Sell:
+//             sell(stage);
+//             print_forward(0);
+//             print_rotate(0);
+//             doing = nullptr;
+//             break;
+//         default:
+//             assert(false);
+//     }
     switch (doing->actionType) {
-        case ActionType::Goto:
+        case ActionType::GotoBuy:
+             if (dist < operate_distance) {
+                 // 1.如果到达目标工作台附近
+                 buy(stage, my_producer);
+                 print_forward(0);
+                 print_rotate(0);
+                 doing = nullptr;
+                 break;
+             }
+             target_rad = calc_rad(stage.pos_x - pos_x, stage.pos_y - pos_y);
+             dist_rad = target_rad - pos_rad;
+             if (dist_rad < 0)
+                 dist_rad += 2 * pi;
+             if (dist_rad > fabs(dist_rad - 2 * pi))
+                 dist_rad -= 2 * pi;
+             // 2.如果距离工作台存在距离
+             // 2.1先对准角度(大角度对准) 大约5度误差
+             if (fabs(dist_rad) > 1e-2/*允许角度偏差*/) {
+                 print_rotate(calc_v_rad(dist_rad));
+                 print_forward(4.2);
+             } else {
+                 print_forward(v_max);
+                 print_rotate(0);
+             }
+            break;
+        case ActionType::GotoSell:
             if (dist < operate_distance) {
                 // 1.如果到达目标工作台附近
-                print_rotate(0);
+                sell(stage);
                 print_forward(0);
+                print_rotate(0);
                 doing = nullptr;
                 break;
             }
@@ -157,27 +227,12 @@ void Robot::tick(Producer &my_producer) {
             } else {
                 print_forward(v_max);
                 print_rotate(0);
-//                // 2.2再走直线（小角度修正5度误差）
-//                double todo_v_rad = calc_v_rad(dist_rad);
-//                print_rotate(todo_v_rad / 15);  //大约是62/15一帧，面向场景可以再调低点
-//                print_forward(min(6.0, dist / seconds_per_frame));
             }
-            break;
-        case ActionType::Buy:
-            buy(stage, my_producer);
-            print_forward(0);
-            print_rotate(0);
-            doing = nullptr;
-            break;
-        case ActionType::Sell:
-            sell(stage);
-            print_forward(0);
-            print_rotate(0);
-            doing = nullptr;
             break;
         default:
             assert(false);
     }
+
 }
 
 std::istream &operator>>(std::istream &in, Robot &robot) {
@@ -187,8 +242,28 @@ std::istream &operator>>(std::istream &in, Robot &robot) {
 }
 
 void Robot::rcv_task(const Task &task) {
-    todo.push(Action(ActionType::Goto, task.from_stage));//定位：此处发生篡改？？？？？？？？
-    todo.push(Action(ActionType::Buy, task.from_stage));
-    todo.push(Action(ActionType::Goto, task.to_stage));
-    todo.push(Action(ActionType::Sell, task.to_stage));
+//    todo.push(Action(ActionType::Goto, task.from_stage));//定位：此处发生篡改？？？？？？？？
+//    todo.push(Action(ActionType::Buy, task.from_stage));
+//    todo.push(Action(ActionType::Goto, task.to_stage));
+//    todo.push(Action(ActionType::Sell, task.to_stage));
+    todo.push(Action(ActionType::GotoBuy, task.from_stage));//定位：此处发生篡改？？？？？？？？
+    todo.push(Action(ActionType::GotoSell, task.to_stage));
+}
+
+void Robot::rcv_jump_task(const Task &task) {
+
+    while(todo.size()){
+        Temp_todo.push(todo.front());
+        todo.pop();
+    }
+//    todo.push(Action(ActionType::Goto, task.from_stage));//定位：此处发生篡改？？？？？？？？
+//    todo.push(Action(ActionType::Buy, task.from_stage));
+//    todo.push(Action(ActionType::Goto, task.to_stage));
+//    todo.push(Action(ActionType::Sell, task.to_stage));
+    todo.push(Action(ActionType::GotoBuy, task.from_stage));//定位：此处发生篡改？？？？？？？？
+    todo.push(Action(ActionType::GotoSell, task.to_stage));
+//    while(Temp_todo.size()){
+//        todo.push(Temp_todo.front());
+//        Temp_todo.pop();
+//    }
 }
