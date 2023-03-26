@@ -24,6 +24,7 @@ public:
     double pos_y;//y坐标
     int id; // 机器人id[0, 3], 目前一共只有4个机器人
     Task task;//当前执行的任务
+    double next_rotate; // 下一帧的角度
     bool is_busy();//空闲状态
 
     Robot() : stage_id(no_stage), object_id(no_object), time_value_coef(1), crash_value_coef(1),
@@ -73,8 +74,6 @@ private:
     double delta_v_rad_max();
 
     double calc_v_rad(double target_rad);
-
-    double calc_vector_rad(double x, double y);
 };
 
 std::istream &operator>>(std::istream &in, Robot &robot);

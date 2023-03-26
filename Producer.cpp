@@ -30,12 +30,14 @@ Task *find_stage_id(std::unordered_map<Stage *, Task *> &task_map, int stage_id)
 
 //均衡获取任务，7大于4、5、6大于1、2、3（主要调度逻辑函数）
 Task *Producer::get_task() {
+#if DEBUG
     fprintf(stderr, "stage_id_ans:%d %d %d %d %d %d %d %d %d %d\n",
             stage_id_ans[0], stage_id_ans[1], stage_id_ans[2], stage_id_ans[3], stage_id_ans[4],
             stage_id_ans[5], stage_id_ans[6], stage_id_ans[7], stage_id_ans[8], stage_id_ans[9]);
     fprintf(stderr, "stage_id_ans:%d %d %d %d %d %d %d %d %d %d\n\n",
             count_task_ans[0], count_task_ans[1], count_task_ans[2], count_task_ans[3], count_task_ans[4],
             count_task_ans[5], count_task_ans[6], count_task_ans[7], count_task_ans[8], count_task_ans[9]);
+#endif
     Task *tmp = nullptr;
     if (stage_id_ans[7] != 0) {
         tmp = find_stage_id(task_map, 7);

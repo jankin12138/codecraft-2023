@@ -14,6 +14,7 @@ void Robot::print_forward(double v) {
 
 void Robot::print_rotate(double v) {
     cout << "rotate" << ' ' << id << ' ' << v << endl;
+    next_rotate = v;
 #if DEBUG
     cerr << "rotate" << ' ' << id << ' ' << v << endl;
 #endif
@@ -88,10 +89,6 @@ double Robot::delta_v_rad_max() {
     return object_id == no_object ? delta_v_rad_max_without_obj : delta_v_rad_max_with_obj;
 }
 
-// 矢量角度
-double Robot::calc_vector_rad(double x, double y) {
-    return atan(y / x) + (x < 0 ? pi : 0);
-}
 
 double Robot::calc_v_rad(double dist_rad) {
     if (dist_rad == 0)
@@ -136,6 +133,7 @@ void Robot::tick(Producer &my_producer) {
     Stage &stage = *doing->stage;
     double dist = distance(pos_x, pos_y, stage.pos_x, stage.pos_y);
     double target_rad, dist_rad;
+    next_rotate = 0;
     switch (doing->actionType) {
         case ActionType::Goto:
             if (dist < operate_distance) {
@@ -145,7 +143,7 @@ void Robot::tick(Producer &my_producer) {
                 doing = nullptr;
                 break;
             }
-            target_rad = calc_vector_rad(stage.pos_x - pos_x, stage.pos_y - pos_y);
+            target_rad = calc_rad(stage.pos_x - pos_x, stage.pos_y - pos_y);
             dist_rad = target_rad - pos_rad;
             if (dist_rad < 0)
                 dist_rad += 2 * pi;
@@ -155,7 +153,7 @@ void Robot::tick(Producer &my_producer) {
             // 2.1先对准角度(大角度对准) 大约5度误差
             if (fabs(dist_rad) > 1e-2/*允许角度偏差*/) {
                 print_rotate(calc_v_rad(dist_rad));
-                print_forward(0);
+                print_forward(4.2);
             } else {
                 print_forward(v_max);
                 print_rotate(0);

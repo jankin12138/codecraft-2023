@@ -65,8 +65,8 @@ int main() {
                 }
             }
             select_robot.tick(my_producer);
-            //rcp.prevent_robot_crash();
         }
+        rcp.prevent_robot_crash();
         //确定结果输出
         cout << "OK" << endl;
         fflush(stdout);
