@@ -19,7 +19,10 @@ Task *Consumer::get_task(Producer &p, Map &map, Robot &robot) {
     }
     while (task_queue.size()) {
         task_queue.front()->from_stage->notify_producer(p);
+        // 修复已完成工作的数量统计
+        p.count_task_ans[task_queue.front()->from_stage->stage_id]--;
         task_queue.pop_front();
+
     }
     return tmp;
 }
@@ -105,7 +108,7 @@ Stage *Consumer::find_nearest_pos(Map &map, Stage *from_stage) {
     }
     if (res != nullptr) {
         res->is_material_task[from_stage->stage_id] = 1;
-        stage_id_count[from_stage->stage_id]++;
+        stage_id_count[from_stage->stage_id]++; // 维护正确取得的任务
     }
     return res;
 }

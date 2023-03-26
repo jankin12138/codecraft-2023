@@ -18,7 +18,7 @@ using namespace std;
 // 4.合成测试
 int main() {
     // 初始化成员函数
-//    Sleep(0 * 1000);
+//    Sleep(8 * 1000);
     Producer my_producer;
     Consumer my_consumer;
     Map my_map;
