@@ -23,4 +23,9 @@ public:
     int stage_id_count[10];
 
     bool material_exist(Stage &stage, Stage &from_stage);
+
+    Task *get_task3(Producer &p, Map &map, Robot &robot);//3ºÅµØÍ¼ÌØ»¯
+
+    Stage *find_nearest_pos3(Map &map, Stage *from_stage,int robot_id);
+
 };

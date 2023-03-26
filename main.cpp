@@ -53,14 +53,16 @@ int main() {
             if (!my_producer.is_empty() && frameID < 8500) {
                 //5.1 空闲机器人向Consumer申请任务
                 if (!select_robot.is_busy()) {
-                    Task *todo_task = my_consumer.get_task(my_producer, my_map, select_robot);
-                    if (todo_task->to_stage != nullptr) {
-                        select_robot.rcv_task(*todo_task);
-#if DEBUG
-                        fprintf(stderr, "from_stage_id: %d(%f,%f) ==> to_stage_id: %d(%f,%f)\n",
-                                todo_task->from_stage->stage_id, todo_task->from_stage->pos_x, todo_task->from_stage->pos_y,
-                                todo_task->to_stage->stage_id, todo_task->to_stage->pos_x, todo_task->to_stage->pos_y);
-#endif
+                    if (!my_map.stage_arr[7].empty()) {
+                        Task *todo_task = my_consumer.get_task(my_producer, my_map, select_robot);
+                        if (todo_task->to_stage != nullptr) {
+                            select_robot.rcv_task(*todo_task);
+                        }
+                    }else{
+                        Task *todo_task = my_consumer.get_task3(my_producer, my_map, select_robot);
+                        if (todo_task->to_stage != nullptr) {
+                            select_robot.rcv_task(*todo_task);
+                        }
                     }
                 }
             }
