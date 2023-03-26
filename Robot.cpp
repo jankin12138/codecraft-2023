@@ -121,6 +121,7 @@ double Robot::calc_v_rad(double dist_rad) {
 }
 
 void Robot::tick(Producer &my_producer) {
+    begin:
     if (doing == nullptr) {
         if (todo.empty())
             return;
@@ -168,13 +169,13 @@ void Robot::tick(Producer &my_producer) {
             print_forward(0);
             print_rotate(0);
             doing = nullptr;
-            break;
+            goto begin;
         case ActionType::Sell:
             sell(stage);
             print_forward(0);
             print_rotate(0);
             doing = nullptr;
-            break;
+            goto begin;
         default:
             assert(false);
     }
