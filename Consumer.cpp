@@ -106,6 +106,23 @@ Stage *Consumer::find_nearest_pos(Map &map, Stage *from_stage) {
             res = &arr;
         }
     }
+    if(res == nullptr && target_stage_id == 7){
+        target_stage_id = 9;
+        for (auto &arr: map.stage_arr[target_stage_id - 1]) {
+            // 当前工作台是否已经存在其他原料
+            if (material_exist(arr, *from_stage)) {
+                continue;
+            }
+            // 寻找距离from的最近to_stage
+            // 增加一个逻辑：优先找已经被分配过的工作台
+            dis = distance(from_stage->pos_x, from_stage->pos_y, arr.pos_x, arr.pos_y) +
+                  (3 - countBits(arr.material_status)) * 50;
+            if (dis < min_distance) {
+                min_distance = dis;
+                res = &arr;
+            }
+        }
+    }
     if (res != nullptr) {
         res->is_material_task[from_stage->stage_id] = 1;
         stage_id_count[from_stage->stage_id]++; // 维护正确取得的任务
