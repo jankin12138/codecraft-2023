@@ -3,21 +3,18 @@
 #include <queue>
 #include "unordered_map"
 #include "Stage.hpp"
-#include "Task.hpp"
-#include "Robot.hpp"
 
 class Task;
-class Robot;
 
+class Stage;
 
 
 class Producer {
 public:
     Task *get_task();      //获取目标工作台任务，主要调度逻辑函数
-    Task *get_task(int robot_id);      //获取目标工作台任务，主要调度逻辑函数
     std::unordered_map<Stage *, Task *> task_map;//目标工作台哈希map，<工作台,任务>类似二维数据
     bool is_empty();
-    int count[4];//图3专用技术
+
     int p_size();
 
     int count_task_ans[10] = {0};//记录目前已经stage通知的任务数量，永远增加，<1:几个任务，2：几个任务，...>
