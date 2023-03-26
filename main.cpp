@@ -23,6 +23,7 @@ int main() {
     Consumer my_consumer;
     Map my_map;
     my_map.init_map(stdin);
+    double v_set = ParamGive(my_map.stage_arr[6].size(),my_map.stage_arr[6].size());
 
     //开始接收帧数据
     puts("OK\n");
@@ -66,13 +67,14 @@ int main() {
                     }
                 }
             }
-            select_robot.tick(my_producer);
+            select_robot.tick(my_producer,v_set);
         }
         rcp.prevent_robot_crash();
         //确定结果输出
         cout << "OK" << endl;
         fflush(stdout);
     }
+    cerr<<v_set<<endl;
     return 0;
 
 }

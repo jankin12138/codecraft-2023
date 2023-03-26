@@ -120,7 +120,7 @@ double Robot::calc_v_rad(double dist_rad) {
     return dist_rad < 0 ? max(-pi, dist_rad / seconds_per_frame) : min(pi, dist_rad / seconds_per_frame);
 }
 
-void Robot::tick(Producer &my_producer) {
+void Robot::tick(Producer &my_producer,int v_set) {
     begin:
     if (doing == nullptr) {
         if (todo.empty())
@@ -154,7 +154,7 @@ void Robot::tick(Producer &my_producer) {
             // 2.1先对准角度(大角度对准) 大约5度误差
             if (fabs(dist_rad) > 1e-2/*允许角度偏差*/) {
                 print_rotate(calc_v_rad(dist_rad));
-                print_forward(4.2);
+                print_forward(v_set);
             } else {
                 print_forward(v_max);
                 print_rotate(0);

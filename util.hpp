@@ -51,3 +51,22 @@ inline int countBits(unsigned long long n) {
     }
     return number;
 }
+
+inline double ParamGive(int num7, int num8) {
+    if (num7 == 0)  //图3
+    {
+        return 4.0;
+    }
+    else if(num7 >= 8)//图1
+    {
+        return 5.9;
+    }
+    else if(num7 == 2 && num8 == 2) //图2
+    {
+        return 4.25;
+    }
+    else // 图4和其他情况
+    {
+        return 6;
+    }
+}

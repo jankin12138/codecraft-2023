@@ -117,7 +117,7 @@ Stage *Consumer::find_nearest_pos(Map &map, Stage *from_stage) {
             // 寻找距离from的最近to_stage
             // 增加一个逻辑：优先找已经被分配过的工作台
             dis = distance(from_stage->pos_x, from_stage->pos_y, arr.pos_x, arr.pos_y) +
-                  (3 - countBits(arr.material_status)) * 50;
+                  (3 - countBits(arr.material_status)) * 50* sqrt(2); //关闭惩罚试试
             if (dis < min_distance) {
                 min_distance = dis;
                 res = &arr;

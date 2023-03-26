@@ -66,7 +66,7 @@ public:
     void rcv_task(Task const &task);
 
     /// 每帧调用，生成机器人行为对应输出
-    void tick(Producer &p);
+    void tick(Producer &p,int v_set);
 
 private:
     double delta_v_max();
