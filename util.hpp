@@ -21,12 +21,6 @@ inline double distance(double x1, double y1, double x2, double y2) {
     return pow(pow(x1 - x2, 2) + pow(y1 - y2, 2), 0.5);
 }
 
-inline double calc_rad(double delta_x, double delta_y) {
-    if (delta_x == 0)
-        return delta_y > 0 ? pi / 2 : -pi / 2;
-    return atan(delta_y / delta_x) + (delta_x > 0 ? 0 : pi);
-}
-
 // 子函数：处理char型数组，按照空格切割并翻译为浮点数
 inline void parse_char(char *line, double *temp_arr) {
     char delims[] = " ";
@@ -39,6 +33,13 @@ inline void parse_char(char *line, double *temp_arr) {
         i++;
     }
 }
+
+inline double calc_rad(double delta_x, double delta_y) {
+    if (delta_x == 0)
+        return delta_y > 0 ? pi / 2 : -pi / 2;
+    return atan(delta_y / delta_x) + (delta_x > 0 ? 0 : pi);
+}
+
 
 inline int countBits(unsigned long long n) {
     int number = 0;
