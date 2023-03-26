@@ -50,7 +50,7 @@ int main() {
         //5.机器人执行任务
         for (int robotId = 0; robotId < 4; robotId++) {
             Robot &select_robot = my_map.robot_arr[robotId];
-            if (!my_producer.is_empty()) {
+            if (!my_producer.is_empty() && frameID < 8500) {
                 //5.1 空闲机器人向Consumer申请任务
                 if (!select_robot.is_busy()) {
                     Task *todo_task = my_consumer.get_task(my_producer, my_map, select_robot);
